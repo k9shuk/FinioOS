@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finio — Personal Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --navy:#0a1628;--navy-2:#111e35;--navy-3:#172542;--navy-4:#1e2f52;
+  --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:#8a6f2e;
+  --teal:#2dd4bf;--teal-dim:#0f766e;
+  --red:#f87171;--red-dim:#991b1b;
+  --green:#34d399;--green-dim:#065f46;
+  --muted:#94a3b8;--muted-2:#64748b;
+  --text:#e2e8f0;--text-dim:#94a3b8;
+  --border:rgba(201,168,76,0.15);--border-light:rgba(255,255,255,0.07);
+  --card:#111e35;--card-2:#172542;
+  --radius:12px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--navy);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
+
+/* ── AUTH SCREENS ── */
+.auth-screen{position:fixed;inset:0;background:var(--navy);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.auth-screen.hidden{display:none;}
+.auth-card{background:var(--navy-2);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:420px;max-width:95vw;}
+.auth-logo{font-family:'DM Serif Display',serif;font-size:32px;color:var(--gold);text-align:center;margin-bottom:4px;}
+.auth-tagline{text-align:center;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;}
+.auth-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:6px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.auth-form-group{margin-bottom:14px;}
+.auth-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:6px;}
+.auth-input{width:100%;background:var(--navy-3);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.15s;}
+.auth-input:focus{border-color:var(--gold-dim);}
+.auth-input-wrap{position:relative;}
+.auth-input-wrap .auth-input{padding-right:44px;}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;}
+.auth-btn{width:100%;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;margin-top:4px;}
+.auth-btn-gold{background:var(--gold);color:var(--navy);}
+.auth-btn-gold:hover{background:var(--gold-light);}
+.auth-btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border-light);}
+.auth-btn-ghost:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted-2);font-size:12px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border-light);}
+.social-btn{width:100%;padding:11px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border-light);font-family:'DM Sans',sans-serif;background:var(--navy-3);color:var(--text);display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:all 0.15s;}
+.social-btn:hover{background:var(--navy-4);border-color:var(--border);}
+.auth-link{text-align:center;font-size:13px;color:var(--muted);margin-top:20px;}
+.auth-link span{color:var(--gold);cursor:pointer;}
+.auth-link span:hover{text-decoration:underline;}
+.auth-error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:none;}
+.auth-success{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);color:var(--green);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:none;}
+.strength-bar{height:3px;background:var(--navy-4);border-radius:4px;margin-top:6px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:4px;transition:all 0.3s;}
+.strength-label{font-size:11px;margin-top:4px;}
+
+/* ── PIN SCREEN ── */
+.pin-screen{position:fixed;inset:0;background:var(--navy);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.pin-screen.hidden{display:none;}
+.pin-dots{display:flex;gap:16px;margin:32px 0;}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted-2);transition:all 0.2s;}
+.pin-dot.filled{background:var(--gold);border-color:var(--gold);}
+.pin-dot.error{background:var(--red);border-color:var(--red);animation:shake 0.4s;}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:280px;}
+.pin-key{height:64px;border-radius:var(--radius);background:var(--navy-2);border:1px solid var(--border-light);color:var(--text);font-size:22px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;transition:all 0.12s;user-select:none;}
+.pin-key:active{background:var(--navy-4);transform:scale(0.95);}
+.pin-key.del{font-size:16px;color:var(--muted);}
+.pin-key.empty{background:transparent;border:none;cursor:default;}
+.pin-hint{font-size:13px;color:var(--muted);margin-top:20px;cursor:pointer;}
+.pin-hint:hover{color:var(--gold);}
+.biometric-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 24px;border-radius:var(--radius-sm);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);font-size:13px;cursor:pointer;transition:all 0.15s;}
+.biometric-btn:hover{background:rgba(201,168,76,0.18);}
+.biometric-icon{font-size:22px;}
+.pin-user-info{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.pin-avatar{width:48px;height:48px;border-radius:50%;background:var(--navy-3);border:2px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--gold);}
+
+/* ── 2FA SCREEN ── */
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin:24px 0;}
+.otp-input{width:52px;height:60px;text-align:center;font-size:24px;font-weight:600;background:var(--navy-3);border:2px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border 0.15s;}
+.otp-input:focus{border-color:var(--gold);}
+.otp-timer{font-size:13px;color:var(--muted);text-align:center;margin-bottom:8px;}
+.otp-resend{font-size:13px;color:var(--gold);cursor:pointer;text-align:center;display:block;}
+
+/* ── LOCK OVERLAY ── */
+.lock-overlay{position:fixed;inset:0;background:rgba(10,22,40,0.97);backdrop-filter:blur(8px);z-index:998;display:none;align-items:center;justify-content:center;flex-direction:column;}
+.lock-overlay.visible{display:flex;}
+.lock-timer-bar{position:fixed;top:0;left:0;height:2px;background:var(--gold);transition:width 1s linear;}
+
+/* ── SECURITY SETTINGS PAGE ── */
+.security-section{margin-bottom:28px;}
+.security-section-title{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;font-weight:500;}
+.security-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--navy-3);border-radius:var(--radius-sm);margin-bottom:8px;}
+.security-item-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.security-item-body{flex:1;}
+.security-item-title{font-size:13px;font-weight:500;}
+.security-item-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-slider{position:absolute;inset:0;background:var(--navy-4);border-radius:24px;cursor:pointer;transition:0.2s;}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--muted-2);border-radius:50%;transition:0.2s;}
+.toggle input:checked+.toggle-slider{background:var(--gold-dim);}
+.toggle input:checked+.toggle-slider:before{background:var(--gold);transform:translateX(20px);}
+.session-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--navy-3);border-radius:var(--radius-sm);margin-bottom:8px;}
+.session-device{font-size:20px;}
+.session-body{flex:1;}
+.session-name{font-size:13px;font-weight:500;}
+.session-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.session-current{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(52,211,153,0.12);color:var(--green);}
+
+/* ── MAIN APP (same as before) ── */
+.shell{display:flex;height:100vh;}
+.sidebar{width:220px;min-width:220px;background:var(--navy-2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+.logo-text{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);letter-spacing:0.5px;}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.nav{padding:12px 0;flex:1;}
+.nav-section{padding:8px 20px 4px;font-size:9px;color:var(--muted-2);letter-spacing:2px;text-transform:uppercase;font-weight:500;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:400;transition:all 0.15s;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,0.07);font-weight:500;}
+.nav-icon{font-size:16px;width:20px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--red-dim);color:var(--red);font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);}
+.user-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;padding:8px;border-radius:var(--radius-sm);transition:background 0.15s;}
+.user-row:hover{background:rgba(255,255,255,0.04);}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-4);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold);flex-shrink:0;}
+.user-name{font-size:13px;font-weight:500;color:var(--text);}
+.user-email{font-size:11px;color:var(--muted);}
+.net-worth-label{font-size:10px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.net-worth-val{font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold);}
+.topbar{display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--border-light);gap:16px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border-light);}
+.btn-ghost:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-danger{background:rgba(248,113,113,0.15);color:var(--red);border:1px solid rgba(248,113,113,0.2);}
+.btn-success{background:rgba(52,211,153,0.15);color:var(--green);border:1px solid rgba(52,211,153,0.2);}
+.content{padding:24px 28px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+.card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:500;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);padding:18px 20px;}
+.stat-label{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1px;}
+.stat-val{font-family:'DM Serif Display',serif;font-size:26px;margin:6px 0 4px;}
+.stat-change{font-size:11px;display:flex;align-items:center;gap:4px;}
+.up{color:var(--green);}.down{color:var(--red);}.gold{color:var(--gold);}.teal{color:var(--teal);}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{color:var(--muted-2);font-weight:500;text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border-light);}
+td{padding:12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-income{background:rgba(52,211,153,0.12);color:var(--green);}
+.badge-expense{background:rgba(248,113,113,0.12);color:var(--red);}
+.badge-transfer{background:rgba(45,212,191,0.12);color:var(--teal);}
+.badge-pending{background:rgba(201,168,76,0.12);color:var(--gold);}
+.badge-paid{background:rgba(52,211,153,0.12);color:var(--green);}
+.tabs{display:flex;gap:4px;background:var(--navy-3);padding:4px;border-radius:var(--radius);margin-bottom:20px;}
+.tab{flex:1;padding:8px;text-align:center;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all 0.15s;}
+.tab.active{background:var(--navy-2);color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;}
+input,select,textarea{background:var(--navy-3);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-dim);}
+select option{background:var(--navy-2);}
+textarea{resize:vertical;min-height:80px;}
+.progress{height:6px;background:var(--navy-3);border-radius:10px;overflow:hidden;}
+.progress-bar{height:100%;border-radius:10px;transition:width 0.4s;}
+.pb-gold{background:var(--gold);}.pb-red{background:var(--red);}.pb-green{background:var(--green);}
+.debt-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+.debt-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.debt-name{font-weight:600;font-size:14px;}
+.debt-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.reminder-item{display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--radius-sm);background:var(--navy-3);margin-bottom:8px;}
+.reminder-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.reminder-body{flex:1;}
+.reminder-title{font-size:13px;font-weight:500;}
+.reminder-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.reminder-amount{font-family:'DM Serif Display',serif;font-size:16px;color:var(--gold);}
+.method-card{background:var(--card);border:2px solid transparent;border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.2s;margin-bottom:12px;}
+.method-card:hover{border-color:var(--gold-dim);}
+.method-card.selected{border-color:var(--gold);background:rgba(201,168,76,0.06);}
+.method-title{font-weight:600;font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px;}
+.method-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6;}
+.method-tag{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(201,168,76,0.15);color:var(--gold);font-weight:600;}
+.plan-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-sm);background:var(--navy-3);margin-bottom:8px;}
+.plan-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;flex-shrink:0;transition:all 0.15s;}
+.plan-check.done{background:var(--green);border-color:var(--green);}
+.plan-info{flex:1;}
+.plan-debt{font-weight:500;font-size:13px;}
+.plan-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.plan-amount{font-family:'DM Serif Display',serif;font-size:16px;color:var(--gold);white-space:nowrap;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--navy-2);border:1px solid var(--border);border-radius:16px;padding:28px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:20px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--navy-3);border-radius:var(--radius-sm);margin-bottom:8px;border-left:3px solid transparent;}
+.notif-item.scanned{border-left-color:var(--green);}
+.notif-item.pending{border-left-color:var(--gold);}
+.notif-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.notif-text{font-size:12px;color:var(--muted);flex:1;line-height:1.5;}
+.notif-result{font-size:11px;color:var(--green);margin-top:4px;}
+.alert{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.alert-warning{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold);}
+.alert-danger{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:var(--red);}
+.alert-success{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);color:var(--green);}
+.chart-wrap{position:relative;width:100%;}
+.plan-summary{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.divider{height:1px;background:var(--border-light);margin:20px 0;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.page.active{animation:fadeIn 0.2s ease;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--navy-4);border-radius:4px;}
+@media(max-width:900px){.grid-4{grid-template-columns:1fr 1fr;}.grid-3{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.sidebar{width:60px;min-width:60px;}.nav-item span,.logo-sub,.sidebar-footer .net-worth-label,.sidebar-footer .net-worth-val,.nav-section,.user-name,.user-email{display:none;}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1 — LOGIN / REGISTER
+══════════════════════════════════════════ -->
+<div class="auth-screen" id="screenAuth">
+  <div class="auth-card">
+    <div class="auth-logo">Finio</div>
+    <div class="auth-tagline">Personal Finance OS</div>
+
+    <!-- LOGIN VIEW -->
+    <div id="viewLogin">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to your secure vault</div>
+      <div id="loginError" class="auth-error"></div>
+      <div class="auth-form-group">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="loginEmail" type="email" placeholder="you@example.com" value="alex@finio.app">
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Password</label>
+        <div class="auth-input-wrap">
+          <input class="auth-input" id="loginPass" type="password" placeholder="••••••••" value="SecurePass1!">
+          <button class="eye-btn" onclick="togglePw('loginPass',this)">👁</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <span style="font-size:12px;color:var(--gold);cursor:pointer" onclick="showView('viewForgot')">Forgot password?</span>
+      </div>
+      <button class="auth-btn auth-btn-gold" onclick="doLogin()">Sign In</button>
+      <div class="auth-divider">or continue with</div>
+      <button class="social-btn" onclick="socialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <button class="social-btn" onclick="socialLogin('Apple')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--text)"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Continue with Apple
+      </button>
+      <div class="auth-link">Don't have an account? <span onclick="showView('viewRegister')">Create one</span></div>
+    </div>
+
+    <!-- REGISTER VIEW -->
+    <div id="viewRegister" style="display:none">
+      <div class="auth-title">Create account</div>
+      <div class="auth-sub">Your financial data, secured by you</div>
+      <div id="regError" class="auth-error"></div>
+      <div class="form-row" style="margin-bottom:0">
+        <div class="auth-form-group"><label class="auth-label">First Name</label><input class="auth-input" id="regFirst" placeholder="Alex"></div>
+        <div class="auth-form-group"><label class="auth-label">Last Name</label><input class="auth-input" id="regLast" placeholder="Rivera"></div>
+      </div>
+      <div class="auth-form-group" style="margin-top:14px">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="regEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Password</label>
+        <div class="auth-input-wrap">
+          <input class="auth-input" id="regPass" type="password" placeholder="Create a strong password" oninput="checkStrength(this.value)">
+          <button class="eye-btn" onclick="togglePw('regPass',this)">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%;background:var(--red)"></div></div>
+        <div class="strength-label" id="strengthLabel" style="color:var(--muted)">Enter a password</div>
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Confirm Password</label>
+        <input class="auth-input" id="regConfirm" type="password" placeholder="Repeat password">
+      </div>
+      <button class="auth-btn auth-btn-gold" style="margin-top:4px" onclick="doRegister()">Create Account</button>
+      <div class="auth-link">Already have an account? <span onclick="showView('viewLogin')">Sign in</span></div>
+    </div>
+
+    <!-- FORGOT PASSWORD VIEW -->
+    <div id="viewForgot" style="display:none">
+      <div class="auth-title">Reset password</div>
+      <div class="auth-sub">We'll send a reset link to your email</div>
+      <div id="forgotSuccess" class="auth-success"></div>
+      <div class="auth-form-group">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="forgotEmail" type="email" placeholder="you@example.com">
+      </div>
+      <button class="auth-btn auth-btn-gold" onclick="doForgot()">Send Reset Link</button>
+      <button class="auth-btn auth-btn-ghost" style="margin-top:10px" onclick="showView('viewLogin')">← Back to Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2 — 2FA VERIFICATION
+══════════════════════════════════════════ -->
+<div class="auth-screen hidden" id="screen2FA">
+  <div class="auth-card" style="text-align:center">
+    <div class="auth-logo">Finio</div>
+    <div style="font-size:40px;margin:20px 0">🔐</div>
+    <div class="auth-title" style="text-align:center">Two-Factor Verification</div>
+    <div class="auth-sub" style="text-align:center">Enter the 6-digit code sent to<br><strong id="tfa2Email" style="color:var(--text)"></strong></div>
+    <div id="tfaError" class="auth-error"></div>
+    <div class="otp-inputs">
+      <input class="otp-input" maxlength="1" id="otp0" oninput="otpNext(0)">
+      <input class="otp-input" maxlength="1" id="otp1" oninput="otpNext(1)">
+      <input class="otp-input" maxlength="1" id="otp2" oninput="otpNext(2)">
+      <input class="otp-input" maxlength="1" id="otp3" oninput="otpNext(3)">
+      <input class="otp-input" maxlength="1" id="otp4" oninput="otpNext(4)">
+      <input class="otp-input" maxlength="1" id="otp5" oninput="otpNext(5)">
+    </div>
+    <div class="otp-timer" id="otpTimer">Resend in 30s</div>
+    <span class="otp-resend" id="otpResend" style="display:none" onclick="resendOTP()">Resend code</span>
+    <button class="auth-btn auth-btn-gold" style="margin-top:16px" onclick="verify2FA()">Verify</button>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted)">Hint for demo: enter <strong style="color:var(--gold)">123456</strong></div>
+    <button class="auth-btn auth-btn-ghost" style="margin-top:10px" onclick="showAuth()">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3 — SET UP PIN (first login)
+══════════════════════════════════════════ -->
+<div class="pin-screen hidden" id="screenSetupPin">
+  <div class="auth-logo" style="margin-bottom:8px">Finio</div>
+  <div id="setupPinTitle" style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:6px;text-align:center">Create your PIN</div>
+  <div id="setupPinSub" style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:0">Choose a 4-digit PIN to protect your app</div>
+  <div class="pin-dots" id="setupDots">
+    <div class="pin-dot" id="sd0"></div><div class="pin-dot" id="sd1"></div>
+    <div class="pin-dot" id="sd2"></div><div class="pin-dot" id="sd3"></div>
+  </div>
+  <div class="pin-keypad">
+    <div class="pin-key" onclick="setupPinKey('1')">1</div><div class="pin-key" onclick="setupPinKey('2')">2</div><div class="pin-key" onclick="setupPinKey('3')">3</div>
+    <div class="pin-key" onclick="setupPinKey('4')">4</div><div class="pin-key" onclick="setupPinKey('5')">5</div><div class="pin-key" onclick="setupPinKey('6')">6</div>
+    <div class="pin-key" onclick="setupPinKey('7')">7</div><div class="pin-key" onclick="setupPinKey('8')">8</div><div class="pin-key" onclick="setupPinKey('9')">9</div>
+    <div class="pin-key empty"></div><div class="pin-key" onclick="setupPinKey('0')">0</div><div class="pin-key del" onclick="setupPinDel()">⌫</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4 — PIN LOCK (returning user)
+══════════════════════════════════════════ -->
+<div class="pin-screen hidden" id="screenPinLock">
+  <div class="pin-user-info">
+    <div class="pin-avatar" id="pinAvatar">A</div>
+    <div>
+      <div style="font-weight:600;font-size:15px" id="pinUserName">Alex Rivera</div>
+      <div style="font-size:12px;color:var(--muted)">Enter PIN to unlock</div>
+    </div>
+  </div>
+  <div class="pin-dots" id="lockDots">
+    <div class="pin-dot" id="ld0"></div><div class="pin-dot" id="ld1"></div>
+    <div class="pin-dot" id="ld2"></div><div class="pin-dot" id="ld3"></div>
+  </div>
+  <div id="pinAttemptMsg" style="font-size:12px;color:var(--red);height:18px;text-align:center"></div>
+  <div class="pin-keypad">
+    <div class="pin-key" onclick="lockPinKey('1')">1</div><div class="pin-key" onclick="lockPinKey('2')">2</div><div class="pin-key" onclick="lockPinKey('3')">3</div>
+    <div class="pin-key" onclick="lockPinKey('4')">4</div><div class="pin-key" onclick="lockPinKey('5')">5</div><div class="pin-key" onclick="lockPinKey('6')">6</div>
+    <div class="pin-key" onclick="lockPinKey('7')">7</div><div class="pin-key" onclick="lockPinKey('8')">8</div><div class="pin-key" onclick="lockPinKey('9')">9</div>
+    <div class="pin-key empty"></div><div class="pin-key" onclick="lockPinKey('0')">0</div><div class="pin-key del" onclick="lockPinDel()">⌫</div>
+  </div>
+  <div class="biometric-btn" id="biometricBtn" onclick="doBiometric()">
+    <span class="biometric-icon">⬡</span>
+    <span>Use Face ID / Fingerprint</span>
+  </div>
+  <div class="pin-hint" onclick="showAuth()">Sign in with password instead</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LOCK OVERLAY (auto-lock)
+══════════════════════════════════════════ -->
+<div class="lock-overlay" id="lockOverlay">
+  <div style="text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">🔒</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px">App Locked</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:32px">Your session was locked due to inactivity</div>
+    <div class="biometric-btn" style="margin:0 auto 16px;width:fit-content" onclick="doBiometricUnlock()">
+      <span class="biometric-icon">⬡</span><span>Unlock with Biometrics</span>
+    </div>
+    <div style="font-size:13px;color:var(--gold);cursor:pointer" onclick="showPinLock()">Use PIN instead</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAIN APP SHELL
+══════════════════════════════════════════ -->
+<div class="shell" id="appShell" style="display:none">
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-text">Finio</div><div class="logo-sub">Finance OS</div></div>
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">◈</span><span>Dashboard</span></div>
+    <div class="nav-item" onclick="showPage('transactions',this)"><span class="nav-icon">⇄</span><span>Transactions</span></div>
+    <div class="nav-item" onclick="showPage('scanner',this)"><span class="nav-icon">⊙</span><span>Auto-Scan</span><span class="nav-badge">3</span></div>
+    <div class="nav-section">Money</div>
+    <div class="nav-item" onclick="showPage('reports',this)"><span class="nav-icon">▦</span><span>Reports</span></div>
+    <div class="nav-item" onclick="showPage('debts',this)"><span class="nav-icon">⊖</span><span>Debts & Loans</span></div>
+    <div class="nav-section">Planning</div>
+    <div class="nav-item" onclick="showPage('reminders',this)"><span class="nav-icon">◎</span><span>Reminders</span><span class="nav-badge">4</span></div>
+    <div class="nav-item" onclick="showPage('debtfree',this)"><span class="nav-icon">✦</span><span>Debt-Free Plan</span></div>
+    <div class="nav-section">Account</div>
+    <div class="nav-item" onclick="showPage('security',this)"><span class="nav-icon">🔒</span><span>Security</span></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-row" onclick="showPage('security',null)">
+      <div class="user-avatar" id="sidebarAvatar">A</div>
+      <div><div class="user-name" id="sidebarName">Alex Rivera</div><div class="user-email" id="sidebarEmail">alex@finio.app</div></div>
+    </div>
+    <div class="net-worth-label">Net Worth</div>
+    <div class="net-worth-val">$12,340</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="topbar">
+    <div class="page-title">Good morning, <span id="dashName">Alex</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('modalEntry')">+ Manual Entry</button>
+    <button class="btn btn-ghost btn-sm" onclick="lockApp()">🔒 Lock</button>
+    <button class="btn btn-danger btn-sm" onclick="doLogout()">Sign Out</button>
+  </div>
+  <div class="content">
+    <div class="alert alert-warning">⚠ 2 payments due in the next 3 days — <strong>$485 total</strong>. <span style="cursor:pointer;text-decoration:underline" onclick="showPage('reminders',null)">View reminders →</span></div>
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Monthly Income</div><div class="stat-val up">$5,800</div><div class="stat-change up">▲ 4.2% vs last month</div></div>
+      <div class="stat-card"><div class="stat-label">Monthly Expenses</div><div class="stat-val down">$3,460</div><div class="stat-change down">▼ 1.8% vs last month</div></div>
+      <div class="stat-card"><div class="stat-label">Total Debt</div><div class="stat-val gold">$18,650</div><div class="stat-change" style="color:var(--muted)">3 active accounts</div></div>
+      <div class="stat-card"><div class="stat-label">Savings Rate</div><div class="stat-val teal">40.3%</div><div class="stat-change up">▲ Above 30% target</div></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card"><div class="card-header"><div class="card-title">Cash Flow — 6 Months</div></div><div class="chart-wrap" style="height:200px"><canvas id="cashflowChart"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">Spending by Category</div></div><div style="display:flex;align-items:center;gap:20px"><div class="chart-wrap" style="height:160px;width:160px;flex-shrink:0"><canvas id="categoryChart"></canvas></div><div id="categoryLegend" style="font-size:12px;"></div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><div class="card-title">Recent Transactions</div><button class="btn btn-ghost btn-sm" onclick="showPage('transactions',null)">View all</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Account</th><th style="text-align:right">Amount</th></tr></thead><tbody id="recentTxBody"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- TRANSACTIONS -->
+<div id="page-transactions" class="page">
+  <div class="topbar"><div class="page-title">Transactions</div><button class="btn btn-ghost btn-sm" id="exportBtn">↓ Export CSV</button><button class="btn btn-gold btn-sm" onclick="openModal('modalEntry')">+ Add Entry</button></div>
+  <div class="content">
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <input type="text" placeholder="Search transactions..." style="flex:1;min-width:180px" id="txSearch" oninput="filterTx()">
+      <select id="txFilter" onchange="filterTx()" style="width:140px"><option value="">All types</option><option value="income">Income</option><option value="expense">Expense</option><option value="transfer">Transfer</option></select>
+      <select id="txCatFilter" onchange="filterTx()" style="width:140px"><option value="">All categories</option><option value="Food">Food</option><option value="Transport">Transport</option><option value="Utilities">Utilities</option><option value="Entertainment">Entertainment</option><option value="Health">Health</option><option value="Shopping">Shopping</option><option value="Income">Income</option></select>
+    </div>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Account</th><th>Type</th><th style="text-align:right">Amount</th><th></th></tr></thead><tbody id="txBody"></tbody></table></div><div id="txEmpty" class="empty-state" style="display:none"><div class="empty-icon">⇄</div><div class="empty-text">No transactions found</div></div></div>
+  </div>
+</div>
+
+<!-- AUTO-SCAN -->
+<div id="page-scanner" class="page">
+  <div class="topbar"><div class="page-title">Auto-Scan</div><button class="btn btn-gold btn-sm" onclick="runScan()">⊙ Scan Now</button></div>
+  <div class="content">
+    <div class="alert alert-success">✓ Connected to: SMS, Email, Push Notifications. Monitoring 2 bank accounts & 2 credit cards.</div>
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Scan Settings</div><div class="form-group" style="margin-bottom:10px"><label>Scan Sources</label><div style="display:flex;flex-direction:column;gap:8px;margin-top:6px"><label style="text-transform:none;letter-spacing:0;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked style="width:auto"> SMS / Text Messages</label><label style="text-transform:none;letter-spacing:0;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked style="width:auto"> Email Inbox</label><label style="text-transform:none;letter-spacing:0;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked style="width:auto"> Bank Notifications</label></div></div></div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px">Last Scan Summary</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Detected</div><div style="font-size:22px;font-family:'DM Serif Display',serif">7</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Imported</div><div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--green)">5</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Pending</div><div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--gold)">2</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Duplicates</div><div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--muted)">0</div></div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><div class="card-title">Detected Notifications</div><button class="btn btn-ghost btn-sm" onclick="approveAll()">✓ Approve All</button></div><div id="scanList"></div></div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div id="page-reports" class="page">
+  <div class="topbar"><div class="page-title">Reports</div></div>
+  <div class="content">
+    <div class="tabs" style="max-width:500px">
+      <div class="tab active" onclick="switchReportTab('overview',this)">Overview</div>
+      <div class="tab" onclick="switchReportTab('income',this)">Income</div>
+      <div class="tab" onclick="switchReportTab('expenses',this)">Expenses</div>
+      <div class="tab" onclick="switchReportTab('trends',this)">Trends</div>
+    </div>
+    <div id="report-overview"><div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><div class="stat-label">Total Income</div><div class="stat-val up">$5,800</div></div><div class="stat-card"><div class="stat-label">Total Expenses</div><div class="stat-val down">$3,460</div></div><div class="stat-card"><div class="stat-label">Net Saved</div><div class="stat-val teal">$2,340</div></div></div><div class="grid-2"><div class="card"><div class="card-title" style="margin-bottom:12px">Expenses by Category</div><div id="expCatList"></div></div><div class="card"><div class="card-title" style="margin-bottom:12px">Income vs Expenses</div><div class="chart-wrap" style="height:220px"><canvas id="ivseChart"></canvas></div></div></div></div>
+    <div id="report-income" style="display:none"><div class="card"><div class="card-title" style="margin-bottom:16px">Income Sources</div><div class="chart-wrap" style="height:260px"><canvas id="incomeChart"></canvas></div></div></div>
+    <div id="report-expenses" style="display:none"><div class="card"><div class="card-title" style="margin-bottom:16px">Expense Breakdown</div><div class="chart-wrap" style="height:300px"><canvas id="expensesChart"></canvas></div></div></div>
+    <div id="report-trends" style="display:none"><div class="card"><div class="card-title" style="margin-bottom:16px">6-Month Spending Trend</div><div class="chart-wrap" style="height:280px"><canvas id="trendsChart"></canvas></div></div></div>
+  </div>
+</div>
+
+<!-- DEBTS -->
+<div id="page-debts" class="page">
+  <div class="topbar"><div class="page-title">Debts & Loans</div><button class="btn btn-gold btn-sm" onclick="openModal('modalDebt')">+ Add Debt</button></div>
+  <div class="content"><div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><div class="stat-label">Total Owed</div><div class="stat-val down">$18,650</div></div><div class="stat-card"><div class="stat-label">Monthly Minimums</div><div class="stat-val gold">$485</div></div><div class="stat-card"><div class="stat-label">Avg Interest Rate</div><div class="stat-val down">14.8%</div></div></div><div id="debtList"></div></div>
+</div>
+
+<!-- REMINDERS -->
+<div id="page-reminders" class="page">
+  <div class="topbar"><div class="page-title">Reminders</div><button class="btn btn-gold btn-sm" onclick="openModal('modalReminder')">+ Add Reminder</button></div>
+  <div class="content">
+    <div class="tabs" style="max-width:500px"><div class="tab active" onclick="switchReminderTab('upcoming',this)">Upcoming</div><div class="tab" onclick="switchReminderTab('subscriptions',this)">Subscriptions</div><div class="tab" onclick="switchReminderTab('bills',this)">Bills</div><div class="tab" onclick="switchReminderTab('loans',this)">Loans</div></div>
+    <div id="reminder-upcoming"></div><div id="reminder-subscriptions" style="display:none"></div><div id="reminder-bills" style="display:none"></div><div id="reminder-loans" style="display:none"></div>
+  </div>
+</div>
+
+<!-- DEBT FREE -->
+<div id="page-debtfree" class="page">
+  <div class="topbar"><div class="page-title">Debt-Free Plan</div></div>
+  <div class="content">
+    <div id="debtfree-methods">
+      <div style="margin-bottom:20px"><div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:6px">Choose Your Strategy</div><div style="font-size:13px;color:var(--muted)">Based on your income of <strong style="color:var(--text)">$5,800/mo</strong> and expenses of <strong style="color:var(--text)">$3,460/mo</strong>, you have <strong style="color:var(--gold)">$2,340/mo</strong> available.</div></div>
+      <div id="methodList"></div>
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-gold" onclick="confirmMethod()">Confirm Strategy & Generate Plan</button></div>
+    </div>
+    <div id="debtfree-plan" style="display:none">
+      <div class="plan-summary"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold)" id="planMethodName"></div><div style="font-size:12px;color:var(--muted);margin-top:4px" id="planSummaryText"></div></div><button class="btn btn-ghost btn-sm" onclick="showMethods()">← Change Strategy</button></div><div class="grid-3" style="margin-top:16px"><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Debt-Free Date</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--green)" id="planFreeDate"></div></div><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Interest Saved</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--gold)" id="planInterestSaved"></div></div><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Extra Monthly</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--teal)" id="planExtra"></div></div></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">Payment Schedule</div><span style="font-size:11px;color:var(--muted)">Click circle to mark paid</span></div><div id="planPayments"></div></div>
+      <div class="card" style="margin-top:16px"><div class="card-header"><div class="card-title">Debt Payoff Timeline</div></div><div class="chart-wrap" style="height:220px"><canvas id="payoffChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECURITY PAGE ══ -->
+<div id="page-security" class="page">
+  <div class="topbar"><div class="page-title">Security</div></div>
+  <div class="content">
+
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="card" style="border-color:rgba(52,211,153,0.2)">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:32px">🛡</div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--green)">Security Score</div><div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--green)" id="secScore">85</div><div style="font-size:11px;color:var(--muted)">Good — Enable 2FA to reach 100</div></div>
+        </div>
+        <div class="progress" style="margin-top:12px"><div class="progress-bar pb-green" id="secScoreBar" style="width:85%"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Account</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="pin-avatar" style="width:44px;height:44px;font-size:18px" id="secAvatar">A</div>
+          <div><div style="font-weight:600" id="secName">Alex Rivera</div><div style="font-size:12px;color:var(--muted)" id="secEmail">alex@finio.app</div></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('modalChangePass')" style="margin-right:8px">Change Password</button>
+        <button class="btn btn-danger btn-sm" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Authentication</div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">🔑</div>
+        <div class="security-item-body"><div class="security-item-title">PIN Lock</div><div class="security-item-sub" id="pinStatus">4-digit PIN active · Last changed today</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('modalChangePin')">Change PIN</button>
+        <label class="toggle"><input type="checkbox" id="togglePin" checked onchange="toggleSecurity('pin',this)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(45,212,191,0.1)">⬡</div>
+        <div class="security-item-body"><div class="security-item-title">Biometric Authentication</div><div class="security-item-sub">Face ID / Fingerprint unlock</div></div>
+        <label class="toggle"><input type="checkbox" id="toggleBio" checked onchange="toggleSecurity('bio',this)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(248,113,113,0.1)">🔐</div>
+        <div class="security-item-body"><div class="security-item-title">Two-Factor Authentication (2FA)</div><div class="security-item-sub" id="tfaStatus">Email OTP · Not enabled</div></div>
+        <button class="btn btn-ghost btn-sm" id="tfaSetupBtn" onclick="setup2FA()">Enable</button>
+        <label class="toggle"><input type="checkbox" id="toggle2FA" onchange="toggleSecurity('2fa',this)"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Auto-Lock</div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">⏱</div>
+        <div class="security-item-body"><div class="security-item-title">Lock after inactivity</div><div class="security-item-sub">App locks automatically when idle</div></div>
+        <select id="autoLockTime" onchange="updateAutoLock()" style="width:140px;background:var(--navy-4);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px">
+          <option value="1">1 minute</option>
+          <option value="5" selected>5 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="0">Never</option>
+        </select>
+      </div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(45,212,191,0.1)">📱</div>
+        <div class="security-item-body"><div class="security-item-title">Lock on background</div><div class="security-item-sub">Instantly lock when app goes to background</div></div>
+        <label class="toggle"><input type="checkbox" id="toggleLockBg" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Privacy</div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">👁</div>
+        <div class="security-item-body"><div class="security-item-title">Hide balances</div><div class="security-item-sub">Mask amounts when app is visible to others</div></div>
+        <label class="toggle"><input type="checkbox" id="toggleHide" onchange="toggleHideBalances(this)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="security-item">
+        <div class="security-item-icon" style="background:rgba(52,211,153,0.1)">📸</div>
+        <div class="security-item-body"><div class="security-item-title">Screenshot protection</div><div class="security-item-sub">Block screenshots in app switcher</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Active Sessions</div>
+      <div class="session-item">
+        <div class="session-device">💻</div>
+        <div class="session-body"><div class="session-name">Chrome on macOS</div><div class="session-meta">Current session · Mexico City</div></div>
+        <span class="session-current">Current</span>
+      </div>
+      <div class="session-item">
+        <div class="session-device">📱</div>
+        <div class="session-body"><div class="session-name">iPhone 15 Pro</div><div class="session-meta">Last active 2 hours ago · Mexico City</div></div>
+        <button class="btn btn-danger btn-sm" onclick="revokeSession(this)">Revoke</button>
+      </div>
+      <div class="session-item">
+        <div class="session-device">💻</div>
+        <div class="session-body"><div class="session-name">Safari on iPad</div><div class="session-meta">Last active 3 days ago · Guadalajara</div></div>
+        <button class="btn btn-danger btn-sm" onclick="revokeSession(this)">Revoke</button>
+      </div>
+      <button class="btn btn-danger" style="margin-top:8px;width:100%" onclick="revokeAllSessions()">Revoke All Other Sessions</button>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Login History</div>
+      <div class="card">
+        <table><thead><tr><th>Date & Time</th><th>Device</th><th>Location</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--muted)">Today, 9:41 AM</td><td>Chrome / macOS</td><td>Mexico City</td><td><span class="badge badge-income">✓ Success</span></td></tr>
+          <tr><td style="color:var(--muted)">Yesterday, 7:22 PM</td><td>iPhone 15 Pro</td><td>Mexico City</td><td><span class="badge badge-income">✓ Success</span></td></tr>
+          <tr><td style="color:var(--muted)">Mar 26, 3:15 PM</td><td>Unknown device</td><td>Unknown</td><td><span class="badge badge-expense">✕ Failed</span></td></tr>
+          <tr><td style="color:var(--muted)">Mar 25, 11:02 AM</td><td>Safari / iPad</td><td>Guadalajara</td><td><span class="badge badge-income">✓ Success</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="security-section">
+      <div class="security-section-title">Danger Zone</div>
+      <div class="security-item" style="border:1px solid rgba(248,113,113,0.15)">
+        <div class="security-item-icon" style="background:rgba(248,113,113,0.1)">⚠</div>
+        <div class="security-item-body"><div class="security-item-title" style="color:var(--red)">Delete Account</div><div class="security-item-sub">Permanently delete all data. Cannot be undone.</div></div>
+        <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div class="modal-overlay" id="modalEntry">
+  <div class="modal">
+    <div class="modal-title">Add Transaction</div>
+    <div class="form-row"><div class="form-group"><label>Type</label><select id="entryType"><option value="expense">Expense</option><option value="income">Income</option><option value="transfer">Transfer</option></select></div><div class="form-group"><label>Amount</label><input type="number" id="entryAmount" placeholder="0.00"></div></div>
+    <div class="form-row"><div class="form-group"><label>Description</label><input type="text" id="entryDesc" placeholder="e.g. Netflix subscription"></div><div class="form-group"><label>Date</label><input type="date" id="entryDate"></div></div>
+    <div class="form-row"><div class="form-group"><label>Category</label><select id="entryCat"><option>Food</option><option>Transport</option><option>Utilities</option><option>Entertainment</option><option>Health</option><option>Shopping</option><option>Income</option><option>Salary</option><option>Other</option></select></div><div class="form-group"><label>Account</label><select id="entryAccount"><option>Chase Checking</option><option>Chase Savings</option><option>Visa Credit</option><option>Amex Gold</option></select></div></div>
+    <div class="form-group"><label>Notes (optional)</label><textarea id="entryNotes" placeholder="Any extra notes..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalEntry')">Cancel</button><button class="btn btn-gold" onclick="addEntry()">Save Transaction</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalDebt">
+  <div class="modal">
+    <div class="modal-title">Add Debt / Loan</div>
+    <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="debtName" placeholder="e.g. Chase Visa"></div><div class="form-group"><label>Type</label><select id="debtType"><option>Credit Card</option><option>Personal Loan</option><option>Student Loan</option><option>Auto Loan</option><option>Mortgage</option><option>Other</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Balance</label><input type="number" id="debtBalance" placeholder="0.00"></div><div class="form-group"><label>Interest Rate (%)</label><input type="number" id="debtRate" placeholder="e.g. 19.99"></div></div>
+    <div class="form-row"><div class="form-group"><label>Minimum Payment</label><input type="number" id="debtMin" placeholder="0.00"></div><div class="form-group"><label>Due Day (of month)</label><input type="number" id="debtDue" placeholder="15" min="1" max="31"></div></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalDebt')">Cancel</button><button class="btn btn-gold" onclick="addDebt()">Save Debt</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalReminder">
+  <div class="modal">
+    <div class="modal-title">Add Reminder</div>
+    <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="remName" placeholder="e.g. Netflix"></div><div class="form-group"><label>Category</label><select id="remCat"><option value="subscriptions">Subscription</option><option value="bills">Bill</option><option value="loans">Loan Payment</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label>Amount</label><input type="number" id="remAmount" placeholder="0.00"></div><div class="form-group"><label>Due Date</label><input type="date" id="remDate"></div></div>
+    <div class="form-group"><label>Frequency</label><select id="remFreq"><option>Monthly</option><option>Weekly</option><option>Annual</option><option>One-time</option></select></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalReminder')">Cancel</button><button class="btn btn-gold" onclick="addReminder()">Save Reminder</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalChangePass">
+  <div class="modal">
+    <div class="modal-title">Change Password</div>
+    <div id="cpError" class="auth-error"></div>
+    <div id="cpSuccess" class="auth-success"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>Current Password</label><input type="password" id="cpCurrent" placeholder="Current password"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>New Password</label><input type="password" id="cpNew" placeholder="New strong password" oninput="checkStrength2(this.value)"><div class="strength-bar"><div class="strength-fill" id="strengthFill2" style="width:0%;background:var(--red)"></div></div><div class="strength-label" id="strengthLabel2" style="color:var(--muted)"></div></div>
+    <div class="form-group" style="margin-bottom:12px"><label>Confirm New Password</label><input type="password" id="cpConfirm" placeholder="Repeat new password"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalChangePass')">Cancel</button><button class="btn btn-gold" onclick="doChangePass()">Update Password</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalChangePin">
+  <div class="modal" style="text-align:center">
+    <div class="modal-title" style="text-align:left">Change PIN</div>
+    <div id="cpinStep1">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Enter your current PIN</div>
+      <div class="pin-dots" id="cpinDots1" style="justify-content:center"><div class="pin-dot" id="cp1d0"></div><div class="pin-dot" id="cp1d1"></div><div class="pin-dot" id="cp1d2"></div><div class="pin-dot" id="cp1d3"></div></div>
+      <div class="pin-keypad" style="margin:16px auto"><div class="pin-key" onclick="cpinKey1('1')">1</div><div class="pin-key" onclick="cpinKey1('2')">2</div><div class="pin-key" onclick="cpinKey1('3')">3</div><div class="pin-key" onclick="cpinKey1('4')">4</div><div class="pin-key" onclick="cpinKey1('5')">5</div><div class="pin-key" onclick="cpinKey1('6')">6</div><div class="pin-key" onclick="cpinKey1('7')">7</div><div class="pin-key" onclick="cpinKey1('8')">8</div><div class="pin-key" onclick="cpinKey1('9')">9</div><div class="pin-key empty"></div><div class="pin-key" onclick="cpinKey1('0')">0</div><div class="pin-key del" onclick="cpinDel1()">⌫</div></div>
+    </div>
+    <div id="cpinStep2" style="display:none">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Enter your new PIN</div>
+      <div class="pin-dots" style="justify-content:center"><div class="pin-dot" id="cp2d0"></div><div class="pin-dot" id="cp2d1"></div><div class="pin-dot" id="cp2d2"></div><div class="pin-dot" id="cp2d3"></div></div>
+      <div class="pin-keypad" style="margin:16px auto"><div class="pin-key" onclick="cpinKey2('1')">1</div><div class="pin-key" onclick="cpinKey2('2')">2</div><div class="pin-key" onclick="cpinKey2('3')">3</div><div class="pin-key" onclick="cpinKey2('4')">4</div><div class="pin-key" onclick="cpinKey2('5')">5</div><div class="pin-key" onclick="cpinKey2('6')">6</div><div class="pin-key" onclick="cpinKey2('7')">7</div><div class="pin-key" onclick="cpinKey2('8')">8</div><div class="pin-key" onclick="cpinKey2('9')">9</div><div class="pin-key empty"></div><div class="pin-key" onclick="cpinKey2('0')">0</div><div class="pin-key del" onclick="cpinDel2()">⌫</div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalChangePin');resetCpinFlow()">Cancel</button></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════ AUTH STATE ══════════════════
+const DB = {
+  users:[{ email:'alex@finio.app', pass:'SecurePass1!', first:'Alex', last:'Rivera', pin:'1234', twoFA:false, initials:'AR' }],
+  currentUser: null,
+  pinAttempts: 0,
+  autoLockMins: 5,
+  securitySettings:{ pin:true, bio:true, twoFA:false, hideBalances:false }
+};
+
+let lockTimer = null;
+let pendingLoginEmail = '';
+
+// ── HASH helper (simple for demo) ──
+function hashPin(p){ return btoa(p); }
+
+// ── Show/Hide screens ──
+function showScreen(id){
+  ['screenAuth','screen2FA','screenSetupPin','screenPinLock'].forEach(s=>document.getElementById(s).classList.add('hidden'));
+  document.getElementById('appShell').style.display='none';
+  const el=document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+}
+function showAuth(){ showScreen('screenAuth'); showView('viewLogin'); }
+function showView(id){
+  ['viewLogin','viewRegister','viewForgot'].forEach(v=>{ const el=document.getElementById(v); if(el) el.style.display='none'; });
+  const el=document.getElementById(id); if(el) el.style.display='block';
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  err.style.display='none';
+  if(!email||!pass){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
+  const user=DB.users.find(u=>u.email===email&&u.pass===pass);
+  if(!user){ err.textContent='Invalid email or password. Try: alex@finio.app / SecurePass1!'; err.style.display='block'; return; }
+  DB.currentUser=user;
+  pendingLoginEmail=email;
+  if(user.twoFA){ go2FA(); }
+  else { afterAuth(); }
+}
+
+function socialLogin(provider){
+  DB.currentUser=DB.users[0];
+  afterAuth();
+}
+
+function afterAuth(){
+  const u=DB.currentUser;
+  if(!u.pin){ showScreen('screenSetupPin'); }
+  else { enterApp(); }
+}
+
+// ── 2FA ──
+function go2FA(){
+  showScreen('screen2FA');
+  document.getElementById('tfa2Email').textContent=pendingLoginEmail;
+  startOTPTimer();
+}
+let otpInterval=null;
+function startOTPTimer(){
+  let s=30;
+  clearInterval(otpInterval);
+  document.getElementById('otpTimer').style.display='block';
+  document.getElementById('otpResend').style.display='none';
+  otpInterval=setInterval(()=>{
+    s--;
+    document.getElementById('otpTimer').textContent='Resend in '+s+'s';
+    if(s<=0){ clearInterval(otpInterval); document.getElementById('otpTimer').style.display='none'; document.getElementById('otpResend').style.display='block'; }
+  },1000);
+}
+function otpNext(i){
+  const val=document.getElementById('otp'+i).value;
+  if(val&&i<5) document.getElementById('otp'+(i+1)).focus();
+}
+function verify2FA(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+  const err=document.getElementById('tfaError');
+  if(code==='123456'){ clearInterval(otpInterval); afterAuth(); }
+  else{ err.textContent='Invalid code. Hint: use 123456'; err.style.display='block'; }
+}
+function resendOTP(){ startOTPTimer(); }
+
+// ── REGISTER ──
+function doRegister(){
+  const first=document.getElementById('regFirst').value.trim();
+  const last=document.getElementById('regLast').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  const confirm=document.getElementById('regConfirm').value;
+  const err=document.getElementById('regError');
+  err.style.display='none';
+  if(!first||!last||!email||!pass){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
+  if(pass!==confirm){ err.textContent='Passwords do not match.'; err.style.display='block'; return; }
+  if(getStrength(pass)<2){ err.textContent='Password is too weak. Add uppercase, numbers, and symbols.'; err.style.display='block'; return; }
+  if(DB.users.find(u=>u.email===email)){ err.textContent='An account with this email already exists.'; err.style.display='block'; return; }
+  const initials=(first[0]+last[0]).toUpperCase();
+  const newUser={ email, pass, first, last, pin:null, twoFA:false, initials };
+  DB.users.push(newUser);
+  DB.currentUser=newUser;
+  showScreen('screenSetupPin');
+}
+
+// ── FORGOT PASSWORD ──
+function doForgot(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  const succ=document.getElementById('forgotSuccess');
+  if(!email){ return; }
+  succ.textContent='If this email exists, a reset link has been sent.';
+  succ.style.display='block';
+}
+
+// ── PASSWORD STRENGTH ──
+function getStrength(p){
+  let s=0;
+  if(p.length>=8) s++;
+  if(/[A-Z]/.test(p)) s++;
+  if(/[0-9]/.test(p)) s++;
+  if(/[^A-Za-z0-9]/.test(p)) s++;
+  return s;
+}
+function checkStrength(p){ _cs(p,'strengthFill','strengthLabel'); }
+function checkStrength2(p){ _cs(p,'strengthFill2','strengthLabel2'); }
+function _cs(p,fillId,labelId){
+  const s=getStrength(p);
+  const pct=[0,25,50,75,100][s];
+  const colors=['var(--red)','var(--red)','#f59e0b','#84cc16','var(--green)'];
+  const labels=['','Weak','Fair','Good','Strong'];
+  const fill=document.getElementById(fillId); const lab=document.getElementById(labelId);
+  if(fill){ fill.style.width=pct+'%'; fill.style.background=colors[s]; }
+  if(lab){ lab.textContent=labels[s]; lab.style.color=colors[s]; }
+}
+function togglePw(id,btn){
+  const inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+
+// ── SETUP PIN (first time) ──
+let setupPinVal='';
+let setupPinFirst='';
+let setupPinConfirming=false;
+function setupPinKey(k){
+  if(setupPinVal.length>=4) return;
+  setupPinVal+=k;
+  updateSetupDots();
+  if(setupPinVal.length===4){
+    if(!setupPinConfirming){ setupPinFirst=setupPinVal; setupPinVal=''; setupPinConfirming=true; document.getElementById('setupPinTitle').textContent='Confirm your PIN'; document.getElementById('setupPinSub').textContent='Enter the same PIN again to confirm'; updateSetupDots(); }
+    else {
+      if(setupPinVal===setupPinFirst){ DB.currentUser.pin=hashPin(setupPinVal); setupPinVal=''; setupPinConfirming=false; enterApp(); }
+      else { flashPinError('setupDots','sd'); setupPinVal=''; setTimeout(()=>{ setupPinVal=''; updateSetupDots(); },600); }
+    }
+  }
+}
+function setupPinDel(){ if(setupPinVal.length) { setupPinVal=setupPinVal.slice(0,-1); updateSetupDots(); } }
+function updateSetupDots(){ for(let i=0;i<4;i++){ const d=document.getElementById('sd'+i); if(d){ d.classList.toggle('filled',i<setupPinVal.length); d.classList.remove('error'); } } }
+
+// ── PIN LOCK ──
+let lockPinVal='';
+function showPinLock(){
+  const u=DB.currentUser;
+  if(!u) return;
+  document.getElementById('pinUserName').textContent=u.first+' '+u.last;
+  document.getElementById('pinAvatar').textContent=u.initials||u.first[0];
+  showScreen('screenPinLock');
+  lockPinVal='';
+  updateLockDots();
+  document.getElementById('pinAttemptMsg').textContent='';
+}
+function lockPinKey(k){
+  if(lockPinVal.length>=4) return;
+  lockPinVal+=k;
+  updateLockDots();
+  if(lockPinVal.length===4){
+    if(hashPin(lockPinVal)===DB.currentUser.pin){ DB.pinAttempts=0; lockPinVal=''; enterApp(); }
+    else {
+      DB.pinAttempts++;
+      flashPinError('lockDots','ld');
+      const left=5-DB.pinAttempts;
+      if(DB.pinAttempts>=5){ document.getElementById('pinAttemptMsg').textContent='Too many attempts. Signing out...'; setTimeout(doLogout,1500); }
+      else { document.getElementById('pinAttemptMsg').textContent=`Wrong PIN. ${left} attempt${left!==1?'s':''} left.`; }
+      setTimeout(()=>{ lockPinVal=''; updateLockDots(); },600);
+    }
+  }
+}
+function lockPinDel(){ if(lockPinVal.length){ lockPinVal=lockPinVal.slice(0,-1); updateLockDots(); } }
+function updateLockDots(){ for(let i=0;i<4;i++){ const d=document.getElementById('ld'+i); if(d){ d.classList.toggle('filled',i<lockPinVal.length); d.classList.remove('error'); } } }
+function flashPinError(wrapId,prefix){ for(let i=0;i<4;i++){ const d=document.getElementById(prefix+i); if(d){ d.classList.add('filled','error'); d.classList.remove('filled'); } } setTimeout(()=>{ for(let i=0;i<4;i++){ const d=document.getElementById(prefix+i); if(d) d.classList.remove('error'); } },500); }
+
+// ── BIOMETRIC ──
+function doBiometric(){
+  // Simulated biometric — in real app, uses WebAuthn / native API
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+  overlay.innerHTML='<div style="font-size:64px;animation:pulse 1s infinite">⬡</div><div style="margin-top:16px;color:#e2e8f0;font-size:15px">Scanning biometric...</div>';
+  document.body.appendChild(overlay);
+  setTimeout(()=>{ document.body.removeChild(overlay); enterApp(); },1400);
+}
+function doBiometricUnlock(){
+  document.getElementById('lockOverlay').classList.remove('visible');
+  doBiometric();
+}
+
+// ── ENTER APP ──
+function enterApp(){
+  ['screenAuth','screen2FA','screenSetupPin','screenPinLock'].forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.add('hidden'); });
+  document.getElementById('lockOverlay').classList.remove('visible');
+  document.getElementById('appShell').style.display='flex';
+  const u=DB.currentUser;
+  // Populate user info
+  const initials=u.initials||(u.first[0]+(u.last?u.last[0]:'')).toUpperCase();
+  document.getElementById('sidebarAvatar').textContent=initials;
+  document.getElementById('sidebarName').textContent=u.first+' '+u.last;
+  document.getElementById('sidebarEmail').textContent=u.email;
+  document.getElementById('dashName').textContent=u.first;
+  document.getElementById('pinAvatar').textContent=initials;
+  document.getElementById('secAvatar').textContent=initials;
+  document.getElementById('secName').textContent=u.first+' '+u.last;
+  document.getElementById('secEmail').textContent=u.email;
+  // Sync security toggles
+  document.getElementById('togglePin').checked=DB.securitySettings.pin;
+  document.getElementById('toggleBio').checked=DB.securitySettings.bio;
+  document.getElementById('toggle2FA').checked=DB.currentUser.twoFA;
+  document.getElementById('tfaStatus').textContent=DB.currentUser.twoFA?'Email OTP · Enabled':'Email OTP · Not enabled';
+  document.getElementById('tfaSetupBtn').textContent=DB.currentUser.twoFA?'Disable':'Enable';
+  updateSecScore();
+  startAutoLock();
+  // Init app
+  setTimeout(()=>{ renderRecentTx(); renderExpCatList(); document.getElementById('entryDate').value=today(); initCashflowChart(); initCategoryChart(); initIvsEChart(); },150);
+}
+
+// ── LOGOUT ──
+function doLogout(){
+  DB.currentUser=null;
+  clearAutoLock();
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('lockOverlay').classList.remove('visible');
+  showAuth();
+}
+
+// ── LOCK / AUTO-LOCK ──
+function lockApp(){
+  clearAutoLock();
+  document.getElementById('lockOverlay').classList.add('visible');
+}
+function startAutoLock(){
+  clearAutoLock();
+  const mins=DB.autoLockMins;
+  if(mins===0) return;
+  let remaining=mins*60;
+  resetLockTimer();
+  document.addEventListener('mousemove',resetLockTimer);
+  document.addEventListener('keydown',resetLockTimer);
+  document.addEventListener('click',resetLockTimer);
+}
+let lockCountdown=null;
+function resetLockTimer(){
+  clearTimeout(lockCountdown);
+  const mins=DB.autoLockMins;
+  if(mins===0) return;
+  lockCountdown=setTimeout(()=>{ if(DB.currentUser) lockApp(); },mins*60*1000);
+}
+function clearAutoLock(){
+  clearTimeout(lockCountdown);
+  document.removeEventListener('mousemove',resetLockTimer);
+  document.removeEventListener('keydown',resetLockTimer);
+  document.removeEventListener('click',resetLockTimer);
+}
+function updateAutoLock(){
+  DB.autoLockMins=parseInt(document.getElementById('autoLockTime').value);
+  startAutoLock();
+}
+
+// ── SECURITY TOGGLES ──
+function toggleSecurity(type,el){
+  DB.securitySettings[type]=el.checked;
+  if(type==='2fa'){ DB.currentUser.twoFA=el.checked; document.getElementById('tfaStatus').textContent=el.checked?'Email OTP · Enabled':'Email OTP · Not enabled'; document.getElementById('tfaSetupBtn').textContent=el.checked?'Disable':'Enable'; }
+  updateSecScore();
+}
+function setup2FA(){ DB.currentUser.twoFA=!DB.currentUser.twoFA; document.getElementById('toggle2FA').checked=DB.currentUser.twoFA; toggleSecurity('2fa',{checked:DB.currentUser.twoFA}); }
+function updateSecScore(){
+  const s=DB.securitySettings;
+  let score=40;
+  if(s.pin) score+=20;
+  if(s.bio) score+=15;
+  if(DB.currentUser&&DB.currentUser.twoFA) score+=25;
+  document.getElementById('secScore').textContent=score;
+  document.getElementById('secScoreBar').style.width=score+'%';
+  document.getElementById('secScoreBar').style.background=score>=80?'var(--green)':score>=60?'var(--gold)':'var(--red)';
+}
+function toggleHideBalances(el){
+  const vals=document.querySelectorAll('.stat-val,.net-worth-val,.reminder-amount,.plan-amount');
+  vals.forEach(v=>{ v.style.filter=el.checked?'blur(6px)':'none'; });
+}
+function revokeSession(btn){ btn.closest('.session-item').style.opacity='0.3'; btn.textContent='Revoked'; btn.disabled=true; }
+function revokeAllSessions(){ document.querySelectorAll('.session-item:not(:first-child)').forEach(s=>{ s.style.opacity='0.3'; }); }
+function confirmDelete(){ if(confirm('Are you sure? This cannot be undone.')) doLogout(); }
+
+// ── CHANGE PASSWORD ──
+function doChangePass(){
+  const cur=document.getElementById('cpCurrent').value;
+  const nw=document.getElementById('cpNew').value;
+  const conf=document.getElementById('cpConfirm').value;
+  const err=document.getElementById('cpError');
+  const succ=document.getElementById('cpSuccess');
+  err.style.display='none'; succ.style.display='none';
+  if(cur!==DB.currentUser.pass){ err.textContent='Current password is incorrect.'; err.style.display='block'; return; }
+  if(nw!==conf){ err.textContent='New passwords do not match.'; err.style.display='block'; return; }
+  if(getStrength(nw)<2){ err.textContent='New password is too weak.'; err.style.display='block'; return; }
+  DB.currentUser.pass=nw;
+  succ.textContent='Password updated successfully!'; succ.style.display='block';
+  setTimeout(()=>closeModal('modalChangePass'),1500);
+}
+
+// ── CHANGE PIN FLOW ──
+let cpin1='',cpin2='',cpinStep=1;
+function cpinKey1(k){ if(cpin1.length>=4) return; cpin1+=k; for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.toggle('filled',i<cpin1.length); if(cpin1.length===4){ if(hashPin(cpin1)!==DB.currentUser.pin){ flashPinError('cpinDots1','cp1d'); setTimeout(()=>{ cpin1=''; for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.remove('filled','error'); },600); } else { document.getElementById('cpinStep1').style.display='none'; document.getElementById('cpinStep2').style.display='block'; } } }
+function cpinDel1(){ if(cpin1.length){ cpin1=cpin1.slice(0,-1); for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.toggle('filled',i<cpin1.length); } }
+function cpinKey2(k){ if(cpin2.length>=4) return; cpin2+=k; for(let i=0;i<4;i++) document.getElementById('cp2d'+i).classList.toggle('filled',i<cpin2.length); if(cpin2.length===4){ DB.currentUser.pin=hashPin(cpin2); document.getElementById('pinStatus').textContent='4-digit PIN active · Just updated'; closeModal('modalChangePin'); resetCpinFlow(); } }
+function cpinDel2(){ if(cpin2.length){ cpin2=cpin2.slice(0,-1); for(let i=0;i<4;i++) document.getElementById('cp2d'+i).classList.toggle('filled',i<cpin2.length); } }
+function resetCpinFlow(){ cpin1=''; cpin2=''; document.getElementById('cpinStep1').style.display='block'; document.getElementById('cpinStep2').style.display='none'; for(let i=0;i<4;i++){ const d1=document.getElementById('cp1d'+i); const d2=document.getElementById('cp2d'+i); if(d1) d1.classList.remove('filled','error'); if(d2) d2.classList.remove('filled','error'); } }
+
+// ══════════════════ APP STATE ══════════════════
+const state={
+  transactions:[
+    {id:1,date:'2025-03-28',desc:'Salary - Acme Corp',cat:'Income',account:'Chase Checking',type:'income',amount:5800,note:''},
+    {id:2,date:'2025-03-27',desc:'Whole Foods Market',cat:'Food',account:'Visa Credit',type:'expense',amount:142.50,note:''},
+    {id:3,date:'2025-03-26',desc:'Uber',cat:'Transport',account:'Visa Credit',type:'expense',amount:18.40,note:''},
+    {id:4,date:'2025-03-25',desc:'Netflix',cat:'Entertainment',account:'Chase Checking',type:'expense',amount:15.99,note:''},
+    {id:5,date:'2025-03-24',desc:'AT&T Bill',cat:'Utilities',account:'Chase Checking',type:'expense',amount:95.00,note:''},
+    {id:6,date:'2025-03-23',desc:'CVS Pharmacy',cat:'Health',account:'Visa Credit',type:'expense',amount:32.10,note:''},
+    {id:7,date:'2025-03-22',desc:'Amazon',cat:'Shopping',account:'Amex Gold',type:'expense',amount:87.99,note:''},
+    {id:8,date:'2025-03-21',desc:'Transfer to Savings',cat:'Transfer',account:'Chase Checking',type:'transfer',amount:500,note:''},
+    {id:9,date:'2025-03-19',desc:'Spotify',cat:'Entertainment',account:'Chase Checking',type:'expense',amount:9.99,note:''},
+    {id:10,date:'2025-03-18',desc:'Freelance Payment',cat:'Income',account:'Chase Checking',type:'income',amount:850,note:''},
+  ],
+  debts:[
+    {id:1,name:'Chase Visa',type:'Credit Card',balance:5200,rate:21.99,minPayment:104,dueDay:15},
+    {id:2,name:'Personal Loan - SoFi',type:'Personal Loan',balance:8450,rate:11.5,minPayment:221,dueDay:5},
+    {id:3,name:'Student Loan',type:'Student Loan',balance:5000,rate:5.0,minPayment:160,dueDay:20},
+  ],
+  reminders:[
+    {id:1,name:'Chase Visa',cat:'loans',amount:104,date:'2025-04-15',freq:'Monthly',icon:'💳',urgent:false},
+    {id:2,name:'SoFi Loan',cat:'loans',amount:221,date:'2025-04-05',freq:'Monthly',icon:'🏦',urgent:true},
+    {id:3,name:'Electric Bill',cat:'bills',amount:78,date:'2025-04-02',freq:'Monthly',icon:'⚡',urgent:true},
+    {id:4,name:'Netflix',cat:'subscriptions',amount:15.99,date:'2025-04-10',freq:'Monthly',icon:'▶',urgent:false},
+    {id:5,name:'AT&T',cat:'bills',amount:95,date:'2025-04-08',freq:'Monthly',icon:'📱',urgent:false},
+    {id:6,name:'Student Loan',cat:'loans',amount:160,date:'2025-04-20',freq:'Monthly',icon:'🎓',urgent:false},
+  ],
+  scanItems:[
+    {id:1,text:'ALERT: Chase Visa purchase $87.99 at AMAZON.COM on Mar 22',detected:'Amazon - Shopping',amount:87.99,status:'imported'},
+    {id:2,text:'SoFi: Your payment of $221.00 is due Apr 5.',detected:'SoFi Loan Payment - Reminder',amount:221,status:'imported'},
+    {id:3,text:'You spent $142.50 at Whole Foods Market using Visa ending 4521',detected:'Whole Foods - Food',amount:142.50,status:'imported'},
+    {id:4,text:'Transfer confirmed: $500.00 from Checking to Savings on Mar 21',detected:'Savings Transfer',amount:500,status:'imported'},
+    {id:5,text:'Your Netflix bill of $15.99 will be charged on Apr 10',detected:'Netflix - Subscription Reminder',amount:15.99,status:'pending'},
+    {id:6,text:'CVS Pharmacy: $32.10 charged to Visa ending 4521',detected:'CVS - Health',amount:32.10,status:'pending'},
+  ],
+  selectedMethod:null, planPayments:[], nextId:200
+};
+
+const methods=[
+  {id:'avalanche',name:'Debt Avalanche',tag:'Saves Most Money',icon:'▲',desc:'Pay minimums on all debts, then throw every extra dollar at the highest interest rate debt first. Mathematically optimal — minimizes total interest paid.',freeMonths:18,interestSaved:3240},
+  {id:'snowball',name:'Debt Snowball',tag:'Most Motivating',icon:'⬤',desc:'Attack the smallest balance first regardless of interest rate. Each paid-off debt gives a psychological win that builds momentum.',freeMonths:22,interestSaved:2680},
+  {id:'hybrid',name:'Hybrid Method',tag:'Balanced',icon:'◈',desc:'Knock out one small debt for a quick win, then switch to highest interest rate. Balances psychology with math.',freeMonths:20,interestSaved:2950},
+  {id:'consolidation',name:'Debt Consolidation',tag:'Simplify Payments',icon:'⊛',desc:'Roll all high-interest debts into one lower-interest loan. One monthly payment, lower rate, potentially faster payoff.',freeMonths:16,interestSaved:3800},
+  {id:'50_30_20',name:'50/30/20 Rule',tag:'Lifestyle Balanced',icon:'◑',desc:'50% to needs, 30% to wants, 20% to savings & debt. Structured and sustainable.',freeMonths:28,interestSaved:1900},
+];
+
+function fmt(n){ return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(d){ return new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function addMonths(n){ const d=new Date(); d.setMonth(d.getMonth()+n); return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
+
+function showPage(id,navEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if(navEl) document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(navEl) navEl.classList.add('active');
+  if(id==='transactions') renderTx();
+  if(id==='scanner') renderScan();
+  if(id==='debts') renderDebts();
+  if(id==='reminders') renderReminders();
+  if(id==='debtfree') renderMethods();
+}
+
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+function renderTxRow(tx){
+  const sign=tx.type==='income'?'+':tx.type==='transfer'?'↔':'-';
+  const col=tx.type==='income'?'up':tx.type==='transfer'?'teal':'down';
+  return `<tr><td style="color:var(--muted)">${fmtDate(tx.date)}</td><td style="font-weight:500">${tx.desc}</td><td style="color:var(--muted)">${tx.cat}</td><td style="color:var(--muted)">${tx.account}</td><td><span class="badge badge-${tx.type}">${tx.type}</span></td><td style="text-align:right" class="${col}">${sign}${fmt(tx.amount)}</td><td style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="deleteTx(${tx.id})" style="padding:4px 8px;font-size:11px">✕</button></td></tr>`;
+}
+function renderTx(){
+  const search=(document.getElementById('txSearch')||{}).value||'';
+  const typeF=(document.getElementById('txFilter')||{}).value||'';
+  const catF=(document.getElementById('txCatFilter')||{}).value||'';
+  let list=state.transactions.filter(t=>(!search||t.desc.toLowerCase().includes(search.toLowerCase()))&&(!typeF||t.type===typeF)&&(!catF||t.cat===catF)).sort((a,b)=>b.date.localeCompare(a.date));
+  const body=document.getElementById('txBody'); const empty=document.getElementById('txEmpty');
+  if(!body) return;
+  body.innerHTML=list.map(renderTxRow).join('');
+  if(empty) empty.style.display=list.length?'none':'block';
+}
+function filterTx(){ renderTx(); }
+function renderRecentTx(){
+  const body=document.getElementById('recentTxBody'); if(!body) return;
+  const list=state.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  body.innerHTML=list.map(t=>`<tr><td style="color:var(--muted)">${fmtDate(t.date)}</td><td style="font-weight:500">${t.desc}</td><td style="color:var(--muted)">${t.cat}</td><td style="color:var(--muted)">${t.account}</td><td style="text-align:right" class="${t.type==='income'?'up':t.type==='transfer'?'teal':'down'}">${t.type==='income'?'+':t.type==='transfer'?'↔':'-'}${fmt(t.amount)}</td></tr>`).join('');
+}
+function deleteTx(id){ state.transactions=state.transactions.filter(t=>t.id!==id); renderTx(); }
+function addEntry(){
+  const type=document.getElementById('entryType').value;
+  const amount=parseFloat(document.getElementById('entryAmount').value)||0;
+  const desc=document.getElementById('entryDesc').value||'Manual Entry';
+  const date=document.getElementById('entryDate').value||today();
+  const cat=document.getElementById('entryCat').value;
+  const account=document.getElementById('entryAccount').value;
+  const note=document.getElementById('entryNotes').value;
+  if(!amount) return alert('Please enter an amount.');
+  state.transactions.push({id:state.nextId++,date,desc,cat,account,type,amount,note});
+  closeModal('modalEntry');
+  renderTx(); renderRecentTx();
+  ['entryAmount','entryDesc','entryNotes'].forEach(id=>document.getElementById(id).value='');
+}
+function renderDebts(){
+  const el=document.getElementById('debtList'); if(!el) return;
+  el.innerHTML=state.debts.map(d=>{
+    const pct=Math.min(100,Math.round((d.balance/(d.balance*1.4))*100));
+    return `<div class="debt-card"><div class="debt-card-header"><div><div class="debt-name">${d.name}</div><div class="debt-meta">${d.type} · Due day ${d.dueDay} · ${d.rate}% APR</div></div><button class="btn btn-danger btn-sm" onclick="deleteDebt(${d.id})">Remove</button></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px"><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Balance</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--red)">${fmt(d.balance)}</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Min Payment</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold)">${fmt(d.minPayment)}</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Monthly Interest</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted)">${fmt(d.balance*(d.rate/100/12))}</div></div></div><div style="display:flex;align-items:center;gap:10px"><div class="progress" style="flex:1"><div class="progress-bar pb-red" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--muted)">${pct}%</span></div></div>`;
+  }).join('');
+  if(!state.debts.length) el.innerHTML='<div class="empty-state"><div class="empty-icon">⊖</div><div class="empty-text">No debts added yet</div></div>';
+}
+function deleteDebt(id){ state.debts=state.debts.filter(d=>d.id!==id); renderDebts(); }
+function addDebt(){
+  const name=document.getElementById('debtName').value;
+  const type=document.getElementById('debtType').value;
+  const balance=parseFloat(document.getElementById('debtBalance').value)||0;
+  const rate=parseFloat(document.getElementById('debtRate').value)||0;
+  const minPayment=parseFloat(document.getElementById('debtMin').value)||0;
+  const dueDay=parseInt(document.getElementById('debtDue').value)||1;
+  if(!name||!balance) return alert('Please fill in name and balance.');
+  state.debts.push({id:state.nextId++,name,type,balance,rate,minPayment,dueDay});
+  closeModal('modalDebt'); renderDebts();
+  ['debtName','debtBalance','debtRate','debtMin','debtDue'].forEach(id=>document.getElementById(id).value='');
+}
+function renderReminders(){
+  const tabs=['upcoming','subscriptions','bills','loans'];
+  tabs.forEach(t=>{ const el=document.getElementById('reminder-'+t); if(el) el.innerHTML=''; });
+  const sorted=[...state.reminders].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const makeItem=r=>`<div class="reminder-item" style="background:${r.urgent?'rgba(248,113,113,0.1)':'var(--navy-3)'};border:${r.urgent?'1px solid rgba(248,113,113,0.2)':'1px solid transparent'}"><div class="reminder-icon" style="background:var(--navy-4)">${r.icon}</div><div class="reminder-body"><div class="reminder-title">${r.name} ${r.urgent?'<span style="color:var(--red);font-size:10px;font-weight:600">● DUE SOON</span>':''}</div><div class="reminder-date">${r.freq} · Due ${fmtDate(r.date)}</div></div><div class="reminder-amount">${fmt(r.amount)}</div><button class="btn btn-success btn-sm" onclick="markReminderPaid(${r.id})">Paid</button></div>`;
+  const upEl=document.getElementById('reminder-upcoming'); if(upEl) upEl.innerHTML=sorted.slice(0,6).map(makeItem).join('');
+  ['subscriptions','bills','loans'].forEach(cat=>{ const el=document.getElementById('reminder-'+cat); if(el){ const items=sorted.filter(r=>r.cat===cat); el.innerHTML=items.length?items.map(makeItem).join(''):'<div class="empty-state"><div class="empty-icon">◎</div><div class="empty-text">None in this category</div></div>'; } });
+}
+function markReminderPaid(id){ state.reminders=state.reminders.filter(r=>r.id!==id); renderReminders(); }
+function switchReminderTab(tab,el){ ['upcoming','subscriptions','bills','loans'].forEach(t=>{ document.getElementById('reminder-'+t).style.display=t===tab?'block':'none'; }); el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function addReminder(){
+  const name=document.getElementById('remName').value;
+  const cat=document.getElementById('remCat').value;
+  const amount=parseFloat(document.getElementById('remAmount').value)||0;
+  const date=document.getElementById('remDate').value||today();
+  const freq=document.getElementById('remFreq').value;
+  if(!name||!amount) return alert('Fill in name and amount.');
+  state.reminders.push({id:state.nextId++,name,cat,amount,date,freq,icon:'◎',urgent:false});
+  closeModal('modalReminder'); renderReminders();
+}
+function renderScan(){
+  const el=document.getElementById('scanList'); if(!el) return;
+  el.innerHTML=state.scanItems.map(s=>`<div class="notif-item ${s.status}"><div class="notif-dot" style="background:${s.status==='imported'?'var(--green)':'var(--gold)'}"></div><div style="flex:1"><div class="notif-text">${s.text}</div><div class="notif-result">→ ${s.detected} · ${fmt(s.amount)}</div></div><span class="badge ${s.status==='imported'?'badge-paid':'badge-pending'}">${s.status}</span>${s.status==='pending'?`<button class="btn btn-gold btn-sm" onclick="approveScan(${s.id})">Import</button>`:''}</div>`).join('');
+}
+function approveScan(id){ const item=state.scanItems.find(s=>s.id===id); if(item){ item.status='imported'; renderScan(); } }
+function approveAll(){ state.scanItems.forEach(s=>s.status='imported'); renderScan(); }
+function runScan(){ const btn=event.target; btn.textContent='Scanning...'; btn.disabled=true; setTimeout(()=>{ btn.textContent='⊙ Scan Now'; btn.disabled=false; },1500); }
+function renderMethods(){
+  const el=document.getElementById('methodList'); if(!el) return;
+  el.innerHTML=methods.map(m=>`<div class="method-card ${state.selectedMethod===m.id?'selected':''}" onclick="selectMethod('${m.id}')"><div class="method-title">${m.icon} ${m.name} <span class="method-tag">${m.tag}</span></div><div class="method-desc">${m.desc}</div><div style="display:flex;gap:16px;margin-top:10px;font-size:12px"><span style="color:var(--green)">✓ Debt-free in ~${m.freeMonths} months</span><span style="color:var(--gold)">✓ Save ~${fmt(m.interestSaved)} in interest</span></div></div>`).join('');
+  document.getElementById('debtfree-methods').style.display='block';
+  document.getElementById('debtfree-plan').style.display='none';
+}
+function selectMethod(id){ state.selectedMethod=id; renderMethods(); }
+function confirmMethod(){
+  if(!state.selectedMethod) return alert('Please select a strategy first.');
+  const m=methods.find(x=>x.id===state.selectedMethod);
+  document.getElementById('debtfree-methods').style.display='none';
+  document.getElementById('debtfree-plan').style.display='block';
+  document.getElementById('planMethodName').textContent=m.name;
+  document.getElementById('planSummaryText').textContent='Using '+m.name+' with $2,340/mo available';
+  document.getElementById('planFreeDate').textContent=addMonths(m.freeMonths);
+  document.getElementById('planInterestSaved').textContent=fmt(m.interestSaved);
+  document.getElementById('planExtra').textContent='$2,340/mo';
+  generatePlan(m); setTimeout(renderPayoffChart,100);
+}
+function generatePlan(m){
+  const debts=[...state.debts]; let ordered;
+  if(m.id==='avalanche') ordered=[...debts].sort((a,b)=>b.rate-a.rate);
+  else if(m.id==='snowball') ordered=[...debts].sort((a,b)=>a.balance-b.balance);
+  else if(m.id==='hybrid'){ const snap=[...debts].sort((a,b)=>a.balance-b.balance); ordered=[snap[0],...[...debts].sort((a,b)=>b.rate-a.rate).filter(d=>d.id!==snap[0].id)]; }
+  else ordered=[...debts].sort((a,b)=>b.rate-a.rate);
+  state.planPayments=[];
+  ordered.forEach((d,i)=>{ const extra=i===0?2340-debts.reduce((s,x)=>s+x.minPayment,0)+d.minPayment:d.minPayment; const payment=i===0?Math.min(d.balance,extra):d.minPayment; const dueDate=new Date(); dueDate.setDate(d.dueDay); dueDate.setMonth(dueDate.getMonth()+i); state.planPayments.push({id:state.nextId++,debtName:d.name,amount:payment,date:dueDate.toISOString().split('T')[0],done:false,month:1+i}); });
+  renderPlan();
+}
+function renderPlan(){
+  const el=document.getElementById('planPayments'); if(!el) return;
+  el.innerHTML=state.planPayments.map(p=>`<div class="plan-row" style="opacity:${p.done?0.5:1}"><div class="plan-check ${p.done?'done':''}" onclick="togglePlan(${p.id})">${p.done?'✓':''}</div><div class="plan-info"><div class="plan-debt">${p.debtName}</div><div class="plan-date">Due: ${fmtDate(p.date)} · Month ${p.month}</div></div><div class="plan-amount" style="${p.done?'color:var(--muted);text-decoration:line-through':''}">${fmt(p.amount)}</div></div>`).join('');
+}
+function togglePlan(id){ const p=state.planPayments.find(x=>x.id===id); if(p) p.done=!p.done; renderPlan(); }
+function showMethods(){ document.getElementById('debtfree-methods').style.display='block'; document.getElementById('debtfree-plan').style.display='none'; }
+function switchReportTab(tab,el){ ['overview','income','expenses','trends'].forEach(t=>{ document.getElementById('report-'+t).style.display=t===tab?'block':'none'; }); el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); setTimeout(()=>{ initIncomeChart(); initExpensesChart(); initTrendsChart(); },100); }
+function renderExpCatList(){
+  const el=document.getElementById('expCatList'); if(!el) return;
+  const cats={Food:157.25,Transport:18.40,Utilities:173,Entertainment:25.98,Health:32.10,Shopping:87.99};
+  const total=Object.values(cats).reduce((a,b)=>a+b,0);
+  const colors={Food:'#c9a84c',Transport:'#2dd4bf',Utilities:'#60a5fa',Entertainment:'#a78bfa',Health:'#34d399',Shopping:'#f87171'};
+  el.innerHTML=Object.entries(cats).map(([cat,amt])=>{ const pct=Math.round(amt/total*100); return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>${cat}</span><span style="color:var(--muted)">${fmt(amt)} (${pct}%)</span></div><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${colors[cat]||'var(--gold)'}"></div></div></div>`; }).join('');
+}
+let charts={};
+function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+function initCashflowChart(){ const ctx=document.getElementById('cashflowChart'); if(!ctx) return; destroyChart('cashflow'); charts.cashflow=new Chart(ctx,{type:'bar',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Income',data:[5200,5200,6050,5800,5800,6650],backgroundColor:'rgba(52,211,153,0.7)',borderRadius:4},{label:'Expenses',data:[3100,3400,4200,3200,3600,3460],backgroundColor:'rgba(248,113,113,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
+function initCategoryChart(){ const ctx=document.getElementById('categoryChart'); if(!ctx) return; destroyChart('category'); const cats=['Food','Transport','Utilities','Entertainment','Health','Shopping']; const data=[157.25,18.40,173,25.98,32.10,87.99]; const colors=['#c9a84c','#2dd4bf','#60a5fa','#a78bfa','#34d399','#f87171']; charts.category=new Chart(ctx,{type:'doughnut',data:{labels:cats,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#111e35'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false}}}}); const total=data.reduce((a,b)=>a+b,0); const legend=document.getElementById('categoryLegend'); if(legend) legend.innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><span style="color:var(--muted)">${c}</span><span style="margin-left:auto;color:var(--text);font-size:11px">${Math.round(data[i]/total*100)}%</span></div>`).join(''); }
+function initIvsEChart(){ const ctx=document.getElementById('ivseChart'); if(!ctx) return; destroyChart('ivse'); charts.ivse=new Chart(ctx,{type:'bar',data:{labels:['Income','Expenses','Saved'],datasets:[{data:[5800,3460,2340],backgroundColor:['rgba(52,211,153,0.7)','rgba(248,113,113,0.7)','rgba(201,168,76,0.7)'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
+function renderPayoffChart(){ const ctx=document.getElementById('payoffChart'); if(!ctx) return; destroyChart('payoff'); charts.payoff=new Chart(ctx,{type:'line',data:{labels:['Now','3mo','6mo','9mo','12mo','15mo','18mo'],datasets:[{label:'Chase Visa',data:[5200,3900,2500,1000,0,0,0],borderColor:'#f87171',tension:0.4,fill:false,pointRadius:3},{label:'SoFi Loan',data:[8450,7200,5800,4200,2500,700,0],borderColor:'#c9a84c',tension:0.4,fill:false,pointRadius:3},{label:'Student Loan',data:[5000,4500,3900,3200,2400,1400,200],borderColor:'#2dd4bf',tension:0.4,fill:false,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#64748b',font:{size:11}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
+function initIncomeChart(){ const ctx=document.getElementById('incomeChart'); if(!ctx) return; destroyChart('income'); charts.income=new Chart(ctx,{type:'bar',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Salary',data:[5200,5200,5200,5800,5800,5800],backgroundColor:'rgba(52,211,153,0.7)',borderRadius:4},{label:'Freelance',data:[0,0,850,0,0,850],backgroundColor:'rgba(201,168,76,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
+function initExpensesChart(){ const ctx=document.getElementById('expensesChart'); if(!ctx) return; destroyChart('expenses'); charts.expenses=new Chart(ctx,{type:'bar',indexAxis:'y',data:{labels:['Food','Utilities','Shopping','Health','Entertainment','Transport'],datasets:[{data:[157.25,173,87.99,32.10,25.98,18.40],backgroundColor:'rgba(201,168,76,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v}},y:{grid:{display:false},ticks:{color:'#94a3b8'}}}}}); }
+function initTrendsChart(){ const ctx=document.getElementById('trendsChart'); if(!ctx) return; destroyChart('trends'); charts.trends=new Chart(ctx,{type:'line',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Total Expenses',data:[3100,3400,4200,3200,3600,3460],borderColor:'#f87171',tension:0.4,fill:true,backgroundColor:'rgba(248,113,113,0.08)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
+
+document.getElementById('exportBtn')&&document.getElementById('exportBtn').addEventListener('click',()=>{ const rows=[['Date','Description','Category','Account','Type','Amount'],...state.transactions.map(t=>[t.date,t.desc,t.cat,t.account,t.type,t.amount])]; const csv=rows.map(r=>r.join(',')).join('\n'); const a=document.createElement('a'); a.href='data:text/csv,'+encodeURIComponent(csv); a.download='transactions.csv'; a.click(); });
+
+// ── BOOT ──
+window.addEventListener('DOMContentLoaded',()=>{
+  // Check if returning user with existing session
+  const hasSession=false; // In production: check localStorage token
+  if(hasSession){ DB.currentUser=DB.users[0]; showPinLock(); }
+  else { showAuth(); }
+});
+</script>
+</body>
+</html>
