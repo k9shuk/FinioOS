@@ -108,7 +108,7 @@ body{background:var(--navy);color:var(--text);font-family:'DM Sans',sans-serif;f
 .session-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .session-current{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(52,211,153,0.12);color:var(--green);}
 
-/* ── MAIN APP (same as before) ── */
+/* ── MAIN APP ── */
 .shell{display:flex;height:100vh;}
 .sidebar{width:220px;min-width:220px;background:var(--navy-2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
 .main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
@@ -235,15 +235,11 @@ textarea{resize:vertical;min-height:80px;}
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     SCREEN 1 — LOGIN / REGISTER
-══════════════════════════════════════════ -->
 <div class="auth-screen" id="screenAuth">
   <div class="auth-card">
     <div class="auth-logo">Finio</div>
     <div class="auth-tagline">Personal Finance OS</div>
 
-    <!-- LOGIN VIEW -->
     <div id="viewLogin">
       <div class="auth-title">Welcome back</div>
       <div class="auth-sub">Sign in to your secure vault</div>
@@ -275,7 +271,6 @@ textarea{resize:vertical;min-height:80px;}
       <div class="auth-link">Don't have an account? <span onclick="showView('viewRegister')">Create one</span></div>
     </div>
 
-    <!-- REGISTER VIEW -->
     <div id="viewRegister" style="display:none">
       <div class="auth-title">Create account</div>
       <div class="auth-sub">Your financial data, secured by you</div>
@@ -305,7 +300,6 @@ textarea{resize:vertical;min-height:80px;}
       <div class="auth-link">Already have an account? <span onclick="showView('viewLogin')">Sign in</span></div>
     </div>
 
-    <!-- FORGOT PASSWORD VIEW -->
     <div id="viewForgot" style="display:none">
       <div class="auth-title">Reset password</div>
       <div class="auth-sub">We'll send a reset link to your email</div>
@@ -320,9 +314,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN 2 — 2FA VERIFICATION
-══════════════════════════════════════════ -->
 <div class="auth-screen hidden" id="screen2FA">
   <div class="auth-card" style="text-align:center">
     <div class="auth-logo">Finio</div>
@@ -346,9 +337,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN 3 — SET UP PIN (first login)
-══════════════════════════════════════════ -->
 <div class="pin-screen hidden" id="screenSetupPin">
   <div class="auth-logo" style="margin-bottom:8px">Finio</div>
   <div id="setupPinTitle" style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:6px;text-align:center">Create your PIN</div>
@@ -365,9 +353,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN 4 — PIN LOCK (returning user)
-══════════════════════════════════════════ -->
 <div class="pin-screen hidden" id="screenPinLock">
   <div class="pin-user-info">
     <div class="pin-avatar" id="pinAvatar">A</div>
@@ -394,9 +379,6 @@ textarea{resize:vertical;min-height:80px;}
   <div class="pin-hint" onclick="showAuth()">Sign in with password instead</div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     LOCK OVERLAY (auto-lock)
-══════════════════════════════════════════ -->
 <div class="lock-overlay" id="lockOverlay">
   <div style="text-align:center">
     <div style="font-size:48px;margin-bottom:16px">🔒</div>
@@ -409,9 +391,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MAIN APP SHELL
-══════════════════════════════════════════ -->
 <div class="shell" id="appShell" style="display:none">
 
 <aside class="sidebar">
@@ -442,7 +421,6 @@ textarea{resize:vertical;min-height:80px;}
 
 <main class="main">
 
-<!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="topbar">
     <div class="page-title">Good morning, <span id="dashName">Alex</span></div>
@@ -466,7 +444,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- TRANSACTIONS -->
 <div id="page-transactions" class="page">
   <div class="topbar"><div class="page-title">Transactions</div><button class="btn btn-ghost btn-sm" id="exportBtn">↓ Export CSV</button><button class="btn btn-gold btn-sm" onclick="openModal('modalEntry')">+ Add Entry</button></div>
   <div class="content">
@@ -479,7 +456,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- AUTO-SCAN -->
 <div id="page-scanner" class="page">
   <div class="topbar"><div class="page-title">Auto-Scan</div><button class="btn btn-gold btn-sm" onclick="runScan()">⊙ Scan Now</button></div>
   <div class="content">
@@ -492,7 +468,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- REPORTS -->
 <div id="page-reports" class="page">
   <div class="topbar"><div class="page-title">Reports</div></div>
   <div class="content">
@@ -509,13 +484,18 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- DEBTS -->
 <div id="page-debts" class="page">
   <div class="topbar"><div class="page-title">Debts & Loans</div><button class="btn btn-gold btn-sm" onclick="openModal('modalDebt')">+ Add Debt</button></div>
-  <div class="content"><div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><div class="stat-label">Total Owed</div><div class="stat-val down">$18,650</div></div><div class="stat-card"><div class="stat-label">Monthly Minimums</div><div class="stat-val gold">$485</div></div><div class="stat-card"><div class="stat-label">Avg Interest Rate</div><div class="stat-val down">14.8%</div></div></div><div id="debtList"></div></div>
+  <div class="content">
+    <div class="grid-3" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Total Owed</div><div class="stat-val down" id="debtTotalOwed">$0</div></div>
+      <div class="stat-card"><div class="stat-label">Monthly Minimums</div><div class="stat-val gold" id="debtMonthlyMin">$0</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Interest Rate</div><div class="stat-val down" id="debtAvgRate">0%</div></div>
+    </div>
+    <div id="debtList"></div>
+  </div>
 </div>
 
-<!-- REMINDERS -->
 <div id="page-reminders" class="page">
   <div class="topbar"><div class="page-title">Reminders</div><button class="btn btn-gold btn-sm" onclick="openModal('modalReminder')">+ Add Reminder</button></div>
   <div class="content">
@@ -524,7 +504,6 @@ textarea{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- DEBT FREE -->
 <div id="page-debtfree" class="page">
   <div class="topbar"><div class="page-title">Debt-Free Plan</div></div>
   <div class="content">
@@ -534,738 +513,4 @@ textarea{resize:vertical;min-height:80px;}
       <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-gold" onclick="confirmMethod()">Confirm Strategy & Generate Plan</button></div>
     </div>
     <div id="debtfree-plan" style="display:none">
-      <div class="plan-summary"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold)" id="planMethodName"></div><div style="font-size:12px;color:var(--muted);margin-top:4px" id="planSummaryText"></div></div><button class="btn btn-ghost btn-sm" onclick="showMethods()">← Change Strategy</button></div><div class="grid-3" style="margin-top:16px"><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Debt-Free Date</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--green)" id="planFreeDate"></div></div><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Interest Saved</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--gold)" id="planInterestSaved"></div></div><div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--muted)">Extra Monthly</div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--teal)" id="planExtra"></div></div></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">Payment Schedule</div><span style="font-size:11px;color:var(--muted)">Click circle to mark paid</span></div><div id="planPayments"></div></div>
-      <div class="card" style="margin-top:16px"><div class="card-header"><div class="card-title">Debt Payoff Timeline</div></div><div class="chart-wrap" style="height:220px"><canvas id="payoffChart"></canvas></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SECURITY PAGE ══ -->
-<div id="page-security" class="page">
-  <div class="topbar"><div class="page-title">Security</div></div>
-  <div class="content">
-
-    <div class="grid-2" style="margin-bottom:24px">
-      <div class="card" style="border-color:rgba(52,211,153,0.2)">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="font-size:32px">🛡</div>
-          <div><div style="font-size:13px;font-weight:600;color:var(--green)">Security Score</div><div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--green)" id="secScore">85</div><div style="font-size:11px;color:var(--muted)">Good — Enable 2FA to reach 100</div></div>
-        </div>
-        <div class="progress" style="margin-top:12px"><div class="progress-bar pb-green" id="secScoreBar" style="width:85%"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="margin-bottom:12px">Account</div>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <div class="pin-avatar" style="width:44px;height:44px;font-size:18px" id="secAvatar">A</div>
-          <div><div style="font-weight:600" id="secName">Alex Rivera</div><div style="font-size:12px;color:var(--muted)" id="secEmail">alex@finio.app</div></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="openModal('modalChangePass')" style="margin-right:8px">Change Password</button>
-        <button class="btn btn-danger btn-sm" onclick="doLogout()">Sign Out</button>
-      </div>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Authentication</div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">🔑</div>
-        <div class="security-item-body"><div class="security-item-title">PIN Lock</div><div class="security-item-sub" id="pinStatus">4-digit PIN active · Last changed today</div></div>
-        <button class="btn btn-ghost btn-sm" onclick="openModal('modalChangePin')">Change PIN</button>
-        <label class="toggle"><input type="checkbox" id="togglePin" checked onchange="toggleSecurity('pin',this)"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(45,212,191,0.1)">⬡</div>
-        <div class="security-item-body"><div class="security-item-title">Biometric Authentication</div><div class="security-item-sub">Face ID / Fingerprint unlock</div></div>
-        <label class="toggle"><input type="checkbox" id="toggleBio" checked onchange="toggleSecurity('bio',this)"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(248,113,113,0.1)">🔐</div>
-        <div class="security-item-body"><div class="security-item-title">Two-Factor Authentication (2FA)</div><div class="security-item-sub" id="tfaStatus">Email OTP · Not enabled</div></div>
-        <button class="btn btn-ghost btn-sm" id="tfaSetupBtn" onclick="setup2FA()">Enable</button>
-        <label class="toggle"><input type="checkbox" id="toggle2FA" onchange="toggleSecurity('2fa',this)"><span class="toggle-slider"></span></label>
-      </div>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Auto-Lock</div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">⏱</div>
-        <div class="security-item-body"><div class="security-item-title">Lock after inactivity</div><div class="security-item-sub">App locks automatically when idle</div></div>
-        <select id="autoLockTime" onchange="updateAutoLock()" style="width:140px;background:var(--navy-4);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px">
-          <option value="1">1 minute</option>
-          <option value="5" selected>5 minutes</option>
-          <option value="15">15 minutes</option>
-          <option value="30">30 minutes</option>
-          <option value="0">Never</option>
-        </select>
-      </div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(45,212,191,0.1)">📱</div>
-        <div class="security-item-body"><div class="security-item-title">Lock on background</div><div class="security-item-sub">Instantly lock when app goes to background</div></div>
-        <label class="toggle"><input type="checkbox" id="toggleLockBg" checked><span class="toggle-slider"></span></label>
-      </div>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Privacy</div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(201,168,76,0.1)">👁</div>
-        <div class="security-item-body"><div class="security-item-title">Hide balances</div><div class="security-item-sub">Mask amounts when app is visible to others</div></div>
-        <label class="toggle"><input type="checkbox" id="toggleHide" onchange="toggleHideBalances(this)"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="security-item">
-        <div class="security-item-icon" style="background:rgba(52,211,153,0.1)">📸</div>
-        <div class="security-item-body"><div class="security-item-title">Screenshot protection</div><div class="security-item-sub">Block screenshots in app switcher</div></div>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Active Sessions</div>
-      <div class="session-item">
-        <div class="session-device">💻</div>
-        <div class="session-body"><div class="session-name">Chrome on macOS</div><div class="session-meta">Current session · Mexico City</div></div>
-        <span class="session-current">Current</span>
-      </div>
-      <div class="session-item">
-        <div class="session-device">📱</div>
-        <div class="session-body"><div class="session-name">iPhone 15 Pro</div><div class="session-meta">Last active 2 hours ago · Mexico City</div></div>
-        <button class="btn btn-danger btn-sm" onclick="revokeSession(this)">Revoke</button>
-      </div>
-      <div class="session-item">
-        <div class="session-device">💻</div>
-        <div class="session-body"><div class="session-name">Safari on iPad</div><div class="session-meta">Last active 3 days ago · Guadalajara</div></div>
-        <button class="btn btn-danger btn-sm" onclick="revokeSession(this)">Revoke</button>
-      </div>
-      <button class="btn btn-danger" style="margin-top:8px;width:100%" onclick="revokeAllSessions()">Revoke All Other Sessions</button>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Login History</div>
-      <div class="card">
-        <table><thead><tr><th>Date & Time</th><th>Device</th><th>Location</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td style="color:var(--muted)">Today, 9:41 AM</td><td>Chrome / macOS</td><td>Mexico City</td><td><span class="badge badge-income">✓ Success</span></td></tr>
-          <tr><td style="color:var(--muted)">Yesterday, 7:22 PM</td><td>iPhone 15 Pro</td><td>Mexico City</td><td><span class="badge badge-income">✓ Success</span></td></tr>
-          <tr><td style="color:var(--muted)">Mar 26, 3:15 PM</td><td>Unknown device</td><td>Unknown</td><td><span class="badge badge-expense">✕ Failed</span></td></tr>
-          <tr><td style="color:var(--muted)">Mar 25, 11:02 AM</td><td>Safari / iPad</td><td>Guadalajara</td><td><span class="badge badge-income">✓ Success</span></td></tr>
-        </tbody></table>
-      </div>
-    </div>
-
-    <div class="security-section">
-      <div class="security-section-title">Danger Zone</div>
-      <div class="security-item" style="border:1px solid rgba(248,113,113,0.15)">
-        <div class="security-item-icon" style="background:rgba(248,113,113,0.1)">⚠</div>
-        <div class="security-item-body"><div class="security-item-title" style="color:var(--red)">Delete Account</div><div class="security-item-sub">Permanently delete all data. Cannot be undone.</div></div>
-        <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Delete</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-</main>
-</div>
-
-<!-- ══ MODALS ══ -->
-<div class="modal-overlay" id="modalEntry">
-  <div class="modal">
-    <div class="modal-title">Add Transaction</div>
-    <div class="form-row"><div class="form-group"><label>Type</label><select id="entryType"><option value="expense">Expense</option><option value="income">Income</option><option value="transfer">Transfer</option></select></div><div class="form-group"><label>Amount</label><input type="number" id="entryAmount" placeholder="0.00"></div></div>
-    <div class="form-row"><div class="form-group"><label>Description</label><input type="text" id="entryDesc" placeholder="e.g. Netflix subscription"></div><div class="form-group"><label>Date</label><input type="date" id="entryDate"></div></div>
-    <div class="form-row"><div class="form-group"><label>Category</label><select id="entryCat"><option>Food</option><option>Transport</option><option>Utilities</option><option>Entertainment</option><option>Health</option><option>Shopping</option><option>Income</option><option>Salary</option><option>Other</option></select></div><div class="form-group"><label>Account</label><select id="entryAccount"><option>Chase Checking</option><option>Chase Savings</option><option>Visa Credit</option><option>Amex Gold</option></select></div></div>
-    <div class="form-group"><label>Notes (optional)</label><textarea id="entryNotes" placeholder="Any extra notes..."></textarea></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalEntry')">Cancel</button><button class="btn btn-gold" onclick="addEntry()">Save Transaction</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalDebt">
-  <div class="modal">
-    <div class="modal-title">Add Debt / Loan</div>
-    <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="debtName" placeholder="e.g. Chase Visa"></div><div class="form-group"><label>Type</label><select id="debtType"><option>Credit Card</option><option>Personal Loan</option><option>Student Loan</option><option>Auto Loan</option><option>Mortgage</option><option>Other</option></select></div></div>
-    <div class="form-row"><div class="form-group"><label>Balance</label><input type="number" id="debtBalance" placeholder="0.00"></div><div class="form-group"><label>Interest Rate (%)</label><input type="number" id="debtRate" placeholder="e.g. 19.99"></div></div>
-    <div class="form-row"><div class="form-group"><label>Minimum Payment</label><input type="number" id="debtMin" placeholder="0.00"></div><div class="form-group"><label>Due Day (of month)</label><input type="number" id="debtDue" placeholder="15" min="1" max="31"></div></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalDebt')">Cancel</button><button class="btn btn-gold" onclick="addDebt()">Save Debt</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalReminder">
-  <div class="modal">
-    <div class="modal-title">Add Reminder</div>
-    <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="remName" placeholder="e.g. Netflix"></div><div class="form-group"><label>Category</label><select id="remCat"><option value="subscriptions">Subscription</option><option value="bills">Bill</option><option value="loans">Loan Payment</option></select></div></div>
-    <div class="form-row"><div class="form-group"><label>Amount</label><input type="number" id="remAmount" placeholder="0.00"></div><div class="form-group"><label>Due Date</label><input type="date" id="remDate"></div></div>
-    <div class="form-group"><label>Frequency</label><select id="remFreq"><option>Monthly</option><option>Weekly</option><option>Annual</option><option>One-time</option></select></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalReminder')">Cancel</button><button class="btn btn-gold" onclick="addReminder()">Save Reminder</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalChangePass">
-  <div class="modal">
-    <div class="modal-title">Change Password</div>
-    <div id="cpError" class="auth-error"></div>
-    <div id="cpSuccess" class="auth-success"></div>
-    <div class="form-group" style="margin-bottom:12px"><label>Current Password</label><input type="password" id="cpCurrent" placeholder="Current password"></div>
-    <div class="form-group" style="margin-bottom:12px"><label>New Password</label><input type="password" id="cpNew" placeholder="New strong password" oninput="checkStrength2(this.value)"><div class="strength-bar"><div class="strength-fill" id="strengthFill2" style="width:0%;background:var(--red)"></div></div><div class="strength-label" id="strengthLabel2" style="color:var(--muted)"></div></div>
-    <div class="form-group" style="margin-bottom:12px"><label>Confirm New Password</label><input type="password" id="cpConfirm" placeholder="Repeat new password"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalChangePass')">Cancel</button><button class="btn btn-gold" onclick="doChangePass()">Update Password</button></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalChangePin">
-  <div class="modal" style="text-align:center">
-    <div class="modal-title" style="text-align:left">Change PIN</div>
-    <div id="cpinStep1">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Enter your current PIN</div>
-      <div class="pin-dots" id="cpinDots1" style="justify-content:center"><div class="pin-dot" id="cp1d0"></div><div class="pin-dot" id="cp1d1"></div><div class="pin-dot" id="cp1d2"></div><div class="pin-dot" id="cp1d3"></div></div>
-      <div class="pin-keypad" style="margin:16px auto"><div class="pin-key" onclick="cpinKey1('1')">1</div><div class="pin-key" onclick="cpinKey1('2')">2</div><div class="pin-key" onclick="cpinKey1('3')">3</div><div class="pin-key" onclick="cpinKey1('4')">4</div><div class="pin-key" onclick="cpinKey1('5')">5</div><div class="pin-key" onclick="cpinKey1('6')">6</div><div class="pin-key" onclick="cpinKey1('7')">7</div><div class="pin-key" onclick="cpinKey1('8')">8</div><div class="pin-key" onclick="cpinKey1('9')">9</div><div class="pin-key empty"></div><div class="pin-key" onclick="cpinKey1('0')">0</div><div class="pin-key del" onclick="cpinDel1()">⌫</div></div>
-    </div>
-    <div id="cpinStep2" style="display:none">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Enter your new PIN</div>
-      <div class="pin-dots" style="justify-content:center"><div class="pin-dot" id="cp2d0"></div><div class="pin-dot" id="cp2d1"></div><div class="pin-dot" id="cp2d2"></div><div class="pin-dot" id="cp2d3"></div></div>
-      <div class="pin-keypad" style="margin:16px auto"><div class="pin-key" onclick="cpinKey2('1')">1</div><div class="pin-key" onclick="cpinKey2('2')">2</div><div class="pin-key" onclick="cpinKey2('3')">3</div><div class="pin-key" onclick="cpinKey2('4')">4</div><div class="pin-key" onclick="cpinKey2('5')">5</div><div class="pin-key" onclick="cpinKey2('6')">6</div><div class="pin-key" onclick="cpinKey2('7')">7</div><div class="pin-key" onclick="cpinKey2('8')">8</div><div class="pin-key" onclick="cpinKey2('9')">9</div><div class="pin-key empty"></div><div class="pin-key" onclick="cpinKey2('0')">0</div><div class="pin-key del" onclick="cpinDel2()">⌫</div></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modalChangePin');resetCpinFlow()">Cancel</button></div>
-  </div>
-</div>
-
-<script>
-// ══════════════════ AUTH STATE ══════════════════
-const DB = {
-  users:[{ email:'alex@finio.app', pass:'SecurePass1!', first:'Alex', last:'Rivera', pin:'1234', twoFA:false, initials:'AR' }],
-  currentUser: null,
-  pinAttempts: 0,
-  autoLockMins: 5,
-  securitySettings:{ pin:true, bio:true, twoFA:false, hideBalances:false }
-};
-
-let lockTimer = null;
-let pendingLoginEmail = '';
-
-// ── HASH helper (simple for demo) ──
-function hashPin(p){ return btoa(p); }
-
-// ── Show/Hide screens ──
-function showScreen(id){
-  ['screenAuth','screen2FA','screenSetupPin','screenPinLock'].forEach(s=>document.getElementById(s).classList.add('hidden'));
-  document.getElementById('appShell').style.display='none';
-  const el=document.getElementById(id);
-  if(el) el.classList.remove('hidden');
-}
-function showAuth(){ showScreen('screenAuth'); showView('viewLogin'); }
-function showView(id){
-  ['viewLogin','viewRegister','viewForgot'].forEach(v=>{ const el=document.getElementById(v); if(el) el.style.display='none'; });
-  const el=document.getElementById(id); if(el) el.style.display='block';
-}
-
-// ── LOGIN ──
-function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
-  const pass=document.getElementById('loginPass').value;
-  const err=document.getElementById('loginError');
-  err.style.display='none';
-  if(!email||!pass){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
-  const user=DB.users.find(u=>u.email===email&&u.pass===pass);
-  if(!user){ err.textContent='Invalid email or password. Try: alex@finio.app / SecurePass1!'; err.style.display='block'; return; }
-  DB.currentUser=user;
-  pendingLoginEmail=email;
-  if(user.twoFA){ go2FA(); }
-  else { afterAuth(); }
-}
-
-function socialLogin(provider){
-  DB.currentUser=DB.users[0];
-  afterAuth();
-}
-
-function afterAuth(){
-  const u=DB.currentUser;
-  if(!u.pin){ showScreen('screenSetupPin'); }
-  else { enterApp(); }
-}
-
-// ── 2FA ──
-function go2FA(){
-  showScreen('screen2FA');
-  document.getElementById('tfa2Email').textContent=pendingLoginEmail;
-  startOTPTimer();
-}
-let otpInterval=null;
-function startOTPTimer(){
-  let s=30;
-  clearInterval(otpInterval);
-  document.getElementById('otpTimer').style.display='block';
-  document.getElementById('otpResend').style.display='none';
-  otpInterval=setInterval(()=>{
-    s--;
-    document.getElementById('otpTimer').textContent='Resend in '+s+'s';
-    if(s<=0){ clearInterval(otpInterval); document.getElementById('otpTimer').style.display='none'; document.getElementById('otpResend').style.display='block'; }
-  },1000);
-}
-function otpNext(i){
-  const val=document.getElementById('otp'+i).value;
-  if(val&&i<5) document.getElementById('otp'+(i+1)).focus();
-}
-function verify2FA(){
-  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
-  const err=document.getElementById('tfaError');
-  if(code==='123456'){ clearInterval(otpInterval); afterAuth(); }
-  else{ err.textContent='Invalid code. Hint: use 123456'; err.style.display='block'; }
-}
-function resendOTP(){ startOTPTimer(); }
-
-// ── REGISTER ──
-function doRegister(){
-  const first=document.getElementById('regFirst').value.trim();
-  const last=document.getElementById('regLast').value.trim();
-  const email=document.getElementById('regEmail').value.trim();
-  const pass=document.getElementById('regPass').value;
-  const confirm=document.getElementById('regConfirm').value;
-  const err=document.getElementById('regError');
-  err.style.display='none';
-  if(!first||!last||!email||!pass){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
-  if(pass!==confirm){ err.textContent='Passwords do not match.'; err.style.display='block'; return; }
-  if(getStrength(pass)<2){ err.textContent='Password is too weak. Add uppercase, numbers, and symbols.'; err.style.display='block'; return; }
-  if(DB.users.find(u=>u.email===email)){ err.textContent='An account with this email already exists.'; err.style.display='block'; return; }
-  const initials=(first[0]+last[0]).toUpperCase();
-  const newUser={ email, pass, first, last, pin:null, twoFA:false, initials };
-  DB.users.push(newUser);
-  DB.currentUser=newUser;
-  showScreen('screenSetupPin');
-}
-
-// ── FORGOT PASSWORD ──
-function doForgot(){
-  const email=document.getElementById('forgotEmail').value.trim();
-  const succ=document.getElementById('forgotSuccess');
-  if(!email){ return; }
-  succ.textContent='If this email exists, a reset link has been sent.';
-  succ.style.display='block';
-}
-
-// ── PASSWORD STRENGTH ──
-function getStrength(p){
-  let s=0;
-  if(p.length>=8) s++;
-  if(/[A-Z]/.test(p)) s++;
-  if(/[0-9]/.test(p)) s++;
-  if(/[^A-Za-z0-9]/.test(p)) s++;
-  return s;
-}
-function checkStrength(p){ _cs(p,'strengthFill','strengthLabel'); }
-function checkStrength2(p){ _cs(p,'strengthFill2','strengthLabel2'); }
-function _cs(p,fillId,labelId){
-  const s=getStrength(p);
-  const pct=[0,25,50,75,100][s];
-  const colors=['var(--red)','var(--red)','#f59e0b','#84cc16','var(--green)'];
-  const labels=['','Weak','Fair','Good','Strong'];
-  const fill=document.getElementById(fillId); const lab=document.getElementById(labelId);
-  if(fill){ fill.style.width=pct+'%'; fill.style.background=colors[s]; }
-  if(lab){ lab.textContent=labels[s]; lab.style.color=colors[s]; }
-}
-function togglePw(id,btn){
-  const inp=document.getElementById(id);
-  inp.type=inp.type==='password'?'text':'password';
-  btn.textContent=inp.type==='password'?'👁':'🙈';
-}
-
-// ── SETUP PIN (first time) ──
-let setupPinVal='';
-let setupPinFirst='';
-let setupPinConfirming=false;
-function setupPinKey(k){
-  if(setupPinVal.length>=4) return;
-  setupPinVal+=k;
-  updateSetupDots();
-  if(setupPinVal.length===4){
-    if(!setupPinConfirming){ setupPinFirst=setupPinVal; setupPinVal=''; setupPinConfirming=true; document.getElementById('setupPinTitle').textContent='Confirm your PIN'; document.getElementById('setupPinSub').textContent='Enter the same PIN again to confirm'; updateSetupDots(); }
-    else {
-      if(setupPinVal===setupPinFirst){ DB.currentUser.pin=hashPin(setupPinVal); setupPinVal=''; setupPinConfirming=false; enterApp(); }
-      else { flashPinError('setupDots','sd'); setupPinVal=''; setTimeout(()=>{ setupPinVal=''; updateSetupDots(); },600); }
-    }
-  }
-}
-function setupPinDel(){ if(setupPinVal.length) { setupPinVal=setupPinVal.slice(0,-1); updateSetupDots(); } }
-function updateSetupDots(){ for(let i=0;i<4;i++){ const d=document.getElementById('sd'+i); if(d){ d.classList.toggle('filled',i<setupPinVal.length); d.classList.remove('error'); } } }
-
-// ── PIN LOCK ──
-let lockPinVal='';
-function showPinLock(){
-  const u=DB.currentUser;
-  if(!u) return;
-  document.getElementById('pinUserName').textContent=u.first+' '+u.last;
-  document.getElementById('pinAvatar').textContent=u.initials||u.first[0];
-  showScreen('screenPinLock');
-  lockPinVal='';
-  updateLockDots();
-  document.getElementById('pinAttemptMsg').textContent='';
-}
-function lockPinKey(k){
-  if(lockPinVal.length>=4) return;
-  lockPinVal+=k;
-  updateLockDots();
-  if(lockPinVal.length===4){
-    if(hashPin(lockPinVal)===DB.currentUser.pin){ DB.pinAttempts=0; lockPinVal=''; enterApp(); }
-    else {
-      DB.pinAttempts++;
-      flashPinError('lockDots','ld');
-      const left=5-DB.pinAttempts;
-      if(DB.pinAttempts>=5){ document.getElementById('pinAttemptMsg').textContent='Too many attempts. Signing out...'; setTimeout(doLogout,1500); }
-      else { document.getElementById('pinAttemptMsg').textContent=`Wrong PIN. ${left} attempt${left!==1?'s':''} left.`; }
-      setTimeout(()=>{ lockPinVal=''; updateLockDots(); },600);
-    }
-  }
-}
-function lockPinDel(){ if(lockPinVal.length){ lockPinVal=lockPinVal.slice(0,-1); updateLockDots(); } }
-function updateLockDots(){ for(let i=0;i<4;i++){ const d=document.getElementById('ld'+i); if(d){ d.classList.toggle('filled',i<lockPinVal.length); d.classList.remove('error'); } } }
-function flashPinError(wrapId,prefix){ for(let i=0;i<4;i++){ const d=document.getElementById(prefix+i); if(d){ d.classList.add('filled','error'); d.classList.remove('filled'); } } setTimeout(()=>{ for(let i=0;i<4;i++){ const d=document.getElementById(prefix+i); if(d) d.classList.remove('error'); } },500); }
-
-// ── BIOMETRIC ──
-function doBiometric(){
-  // Simulated biometric — in real app, uses WebAuthn / native API
-  const overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
-  overlay.innerHTML='<div style="font-size:64px;animation:pulse 1s infinite">⬡</div><div style="margin-top:16px;color:#e2e8f0;font-size:15px">Scanning biometric...</div>';
-  document.body.appendChild(overlay);
-  setTimeout(()=>{ document.body.removeChild(overlay); enterApp(); },1400);
-}
-function doBiometricUnlock(){
-  document.getElementById('lockOverlay').classList.remove('visible');
-  doBiometric();
-}
-
-// ── ENTER APP ──
-function enterApp(){
-  ['screenAuth','screen2FA','screenSetupPin','screenPinLock'].forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.add('hidden'); });
-  document.getElementById('lockOverlay').classList.remove('visible');
-  document.getElementById('appShell').style.display='flex';
-  const u=DB.currentUser;
-  // Populate user info
-  const initials=u.initials||(u.first[0]+(u.last?u.last[0]:'')).toUpperCase();
-  document.getElementById('sidebarAvatar').textContent=initials;
-  document.getElementById('sidebarName').textContent=u.first+' '+u.last;
-  document.getElementById('sidebarEmail').textContent=u.email;
-  document.getElementById('dashName').textContent=u.first;
-  document.getElementById('pinAvatar').textContent=initials;
-  document.getElementById('secAvatar').textContent=initials;
-  document.getElementById('secName').textContent=u.first+' '+u.last;
-  document.getElementById('secEmail').textContent=u.email;
-  // Sync security toggles
-  document.getElementById('togglePin').checked=DB.securitySettings.pin;
-  document.getElementById('toggleBio').checked=DB.securitySettings.bio;
-  document.getElementById('toggle2FA').checked=DB.currentUser.twoFA;
-  document.getElementById('tfaStatus').textContent=DB.currentUser.twoFA?'Email OTP · Enabled':'Email OTP · Not enabled';
-  document.getElementById('tfaSetupBtn').textContent=DB.currentUser.twoFA?'Disable':'Enable';
-  updateSecScore();
-  startAutoLock();
-  // Init app
-  setTimeout(()=>{ renderRecentTx(); renderExpCatList(); document.getElementById('entryDate').value=today(); initCashflowChart(); initCategoryChart(); initIvsEChart(); },150);
-}
-
-// ── LOGOUT ──
-function doLogout(){
-  DB.currentUser=null;
-  clearAutoLock();
-  document.getElementById('appShell').style.display='none';
-  document.getElementById('lockOverlay').classList.remove('visible');
-  showAuth();
-}
-
-// ── LOCK / AUTO-LOCK ──
-function lockApp(){
-  clearAutoLock();
-  document.getElementById('lockOverlay').classList.add('visible');
-}
-function startAutoLock(){
-  clearAutoLock();
-  const mins=DB.autoLockMins;
-  if(mins===0) return;
-  let remaining=mins*60;
-  resetLockTimer();
-  document.addEventListener('mousemove',resetLockTimer);
-  document.addEventListener('keydown',resetLockTimer);
-  document.addEventListener('click',resetLockTimer);
-}
-let lockCountdown=null;
-function resetLockTimer(){
-  clearTimeout(lockCountdown);
-  const mins=DB.autoLockMins;
-  if(mins===0) return;
-  lockCountdown=setTimeout(()=>{ if(DB.currentUser) lockApp(); },mins*60*1000);
-}
-function clearAutoLock(){
-  clearTimeout(lockCountdown);
-  document.removeEventListener('mousemove',resetLockTimer);
-  document.removeEventListener('keydown',resetLockTimer);
-  document.removeEventListener('click',resetLockTimer);
-}
-function updateAutoLock(){
-  DB.autoLockMins=parseInt(document.getElementById('autoLockTime').value);
-  startAutoLock();
-}
-
-// ── SECURITY TOGGLES ──
-function toggleSecurity(type,el){
-  DB.securitySettings[type]=el.checked;
-  if(type==='2fa'){ DB.currentUser.twoFA=el.checked; document.getElementById('tfaStatus').textContent=el.checked?'Email OTP · Enabled':'Email OTP · Not enabled'; document.getElementById('tfaSetupBtn').textContent=el.checked?'Disable':'Enable'; }
-  updateSecScore();
-}
-function setup2FA(){ DB.currentUser.twoFA=!DB.currentUser.twoFA; document.getElementById('toggle2FA').checked=DB.currentUser.twoFA; toggleSecurity('2fa',{checked:DB.currentUser.twoFA}); }
-function updateSecScore(){
-  const s=DB.securitySettings;
-  let score=40;
-  if(s.pin) score+=20;
-  if(s.bio) score+=15;
-  if(DB.currentUser&&DB.currentUser.twoFA) score+=25;
-  document.getElementById('secScore').textContent=score;
-  document.getElementById('secScoreBar').style.width=score+'%';
-  document.getElementById('secScoreBar').style.background=score>=80?'var(--green)':score>=60?'var(--gold)':'var(--red)';
-}
-function toggleHideBalances(el){
-  const vals=document.querySelectorAll('.stat-val,.net-worth-val,.reminder-amount,.plan-amount');
-  vals.forEach(v=>{ v.style.filter=el.checked?'blur(6px)':'none'; });
-}
-function revokeSession(btn){ btn.closest('.session-item').style.opacity='0.3'; btn.textContent='Revoked'; btn.disabled=true; }
-function revokeAllSessions(){ document.querySelectorAll('.session-item:not(:first-child)').forEach(s=>{ s.style.opacity='0.3'; }); }
-function confirmDelete(){ if(confirm('Are you sure? This cannot be undone.')) doLogout(); }
-
-// ── CHANGE PASSWORD ──
-function doChangePass(){
-  const cur=document.getElementById('cpCurrent').value;
-  const nw=document.getElementById('cpNew').value;
-  const conf=document.getElementById('cpConfirm').value;
-  const err=document.getElementById('cpError');
-  const succ=document.getElementById('cpSuccess');
-  err.style.display='none'; succ.style.display='none';
-  if(cur!==DB.currentUser.pass){ err.textContent='Current password is incorrect.'; err.style.display='block'; return; }
-  if(nw!==conf){ err.textContent='New passwords do not match.'; err.style.display='block'; return; }
-  if(getStrength(nw)<2){ err.textContent='New password is too weak.'; err.style.display='block'; return; }
-  DB.currentUser.pass=nw;
-  succ.textContent='Password updated successfully!'; succ.style.display='block';
-  setTimeout(()=>closeModal('modalChangePass'),1500);
-}
-
-// ── CHANGE PIN FLOW ──
-let cpin1='',cpin2='',cpinStep=1;
-function cpinKey1(k){ if(cpin1.length>=4) return; cpin1+=k; for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.toggle('filled',i<cpin1.length); if(cpin1.length===4){ if(hashPin(cpin1)!==DB.currentUser.pin){ flashPinError('cpinDots1','cp1d'); setTimeout(()=>{ cpin1=''; for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.remove('filled','error'); },600); } else { document.getElementById('cpinStep1').style.display='none'; document.getElementById('cpinStep2').style.display='block'; } } }
-function cpinDel1(){ if(cpin1.length){ cpin1=cpin1.slice(0,-1); for(let i=0;i<4;i++) document.getElementById('cp1d'+i).classList.toggle('filled',i<cpin1.length); } }
-function cpinKey2(k){ if(cpin2.length>=4) return; cpin2+=k; for(let i=0;i<4;i++) document.getElementById('cp2d'+i).classList.toggle('filled',i<cpin2.length); if(cpin2.length===4){ DB.currentUser.pin=hashPin(cpin2); document.getElementById('pinStatus').textContent='4-digit PIN active · Just updated'; closeModal('modalChangePin'); resetCpinFlow(); } }
-function cpinDel2(){ if(cpin2.length){ cpin2=cpin2.slice(0,-1); for(let i=0;i<4;i++) document.getElementById('cp2d'+i).classList.toggle('filled',i<cpin2.length); } }
-function resetCpinFlow(){ cpin1=''; cpin2=''; document.getElementById('cpinStep1').style.display='block'; document.getElementById('cpinStep2').style.display='none'; for(let i=0;i<4;i++){ const d1=document.getElementById('cp1d'+i); const d2=document.getElementById('cp2d'+i); if(d1) d1.classList.remove('filled','error'); if(d2) d2.classList.remove('filled','error'); } }
-
-// ══════════════════ APP STATE ══════════════════
-const state={
-  transactions:[
-    {id:1,date:'2025-03-28',desc:'Salary - Acme Corp',cat:'Income',account:'Chase Checking',type:'income',amount:5800,note:''},
-    {id:2,date:'2025-03-27',desc:'Whole Foods Market',cat:'Food',account:'Visa Credit',type:'expense',amount:142.50,note:''},
-    {id:3,date:'2025-03-26',desc:'Uber',cat:'Transport',account:'Visa Credit',type:'expense',amount:18.40,note:''},
-    {id:4,date:'2025-03-25',desc:'Netflix',cat:'Entertainment',account:'Chase Checking',type:'expense',amount:15.99,note:''},
-    {id:5,date:'2025-03-24',desc:'AT&T Bill',cat:'Utilities',account:'Chase Checking',type:'expense',amount:95.00,note:''},
-    {id:6,date:'2025-03-23',desc:'CVS Pharmacy',cat:'Health',account:'Visa Credit',type:'expense',amount:32.10,note:''},
-    {id:7,date:'2025-03-22',desc:'Amazon',cat:'Shopping',account:'Amex Gold',type:'expense',amount:87.99,note:''},
-    {id:8,date:'2025-03-21',desc:'Transfer to Savings',cat:'Transfer',account:'Chase Checking',type:'transfer',amount:500,note:''},
-    {id:9,date:'2025-03-19',desc:'Spotify',cat:'Entertainment',account:'Chase Checking',type:'expense',amount:9.99,note:''},
-    {id:10,date:'2025-03-18',desc:'Freelance Payment',cat:'Income',account:'Chase Checking',type:'income',amount:850,note:''},
-  ],
-  debts:[
-    {id:1,name:'Chase Visa',type:'Credit Card',balance:5200,rate:21.99,minPayment:104,dueDay:15},
-    {id:2,name:'Personal Loan - SoFi',type:'Personal Loan',balance:8450,rate:11.5,minPayment:221,dueDay:5},
-    {id:3,name:'Student Loan',type:'Student Loan',balance:5000,rate:5.0,minPayment:160,dueDay:20},
-  ],
-  reminders:[
-    {id:1,name:'Chase Visa',cat:'loans',amount:104,date:'2025-04-15',freq:'Monthly',icon:'💳',urgent:false},
-    {id:2,name:'SoFi Loan',cat:'loans',amount:221,date:'2025-04-05',freq:'Monthly',icon:'🏦',urgent:true},
-    {id:3,name:'Electric Bill',cat:'bills',amount:78,date:'2025-04-02',freq:'Monthly',icon:'⚡',urgent:true},
-    {id:4,name:'Netflix',cat:'subscriptions',amount:15.99,date:'2025-04-10',freq:'Monthly',icon:'▶',urgent:false},
-    {id:5,name:'AT&T',cat:'bills',amount:95,date:'2025-04-08',freq:'Monthly',icon:'📱',urgent:false},
-    {id:6,name:'Student Loan',cat:'loans',amount:160,date:'2025-04-20',freq:'Monthly',icon:'🎓',urgent:false},
-  ],
-  scanItems:[
-    {id:1,text:'ALERT: Chase Visa purchase $87.99 at AMAZON.COM on Mar 22',detected:'Amazon - Shopping',amount:87.99,status:'imported'},
-    {id:2,text:'SoFi: Your payment of $221.00 is due Apr 5.',detected:'SoFi Loan Payment - Reminder',amount:221,status:'imported'},
-    {id:3,text:'You spent $142.50 at Whole Foods Market using Visa ending 4521',detected:'Whole Foods - Food',amount:142.50,status:'imported'},
-    {id:4,text:'Transfer confirmed: $500.00 from Checking to Savings on Mar 21',detected:'Savings Transfer',amount:500,status:'imported'},
-    {id:5,text:'Your Netflix bill of $15.99 will be charged on Apr 10',detected:'Netflix - Subscription Reminder',amount:15.99,status:'pending'},
-    {id:6,text:'CVS Pharmacy: $32.10 charged to Visa ending 4521',detected:'CVS - Health',amount:32.10,status:'pending'},
-  ],
-  selectedMethod:null, planPayments:[], nextId:200
-};
-
-const methods=[
-  {id:'avalanche',name:'Debt Avalanche',tag:'Saves Most Money',icon:'▲',desc:'Pay minimums on all debts, then throw every extra dollar at the highest interest rate debt first. Mathematically optimal — minimizes total interest paid.',freeMonths:18,interestSaved:3240},
-  {id:'snowball',name:'Debt Snowball',tag:'Most Motivating',icon:'⬤',desc:'Attack the smallest balance first regardless of interest rate. Each paid-off debt gives a psychological win that builds momentum.',freeMonths:22,interestSaved:2680},
-  {id:'hybrid',name:'Hybrid Method',tag:'Balanced',icon:'◈',desc:'Knock out one small debt for a quick win, then switch to highest interest rate. Balances psychology with math.',freeMonths:20,interestSaved:2950},
-  {id:'consolidation',name:'Debt Consolidation',tag:'Simplify Payments',icon:'⊛',desc:'Roll all high-interest debts into one lower-interest loan. One monthly payment, lower rate, potentially faster payoff.',freeMonths:16,interestSaved:3800},
-  {id:'50_30_20',name:'50/30/20 Rule',tag:'Lifestyle Balanced',icon:'◑',desc:'50% to needs, 30% to wants, 20% to savings & debt. Structured and sustainable.',freeMonths:28,interestSaved:1900},
-];
-
-function fmt(n){ return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtDate(d){ return new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function today(){ return new Date().toISOString().split('T')[0]; }
-function addMonths(n){ const d=new Date(); d.setMonth(d.getMonth()+n); return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
-
-function showPage(id,navEl){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  if(navEl) document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(navEl) navEl.classList.add('active');
-  if(id==='transactions') renderTx();
-  if(id==='scanner') renderScan();
-  if(id==='debts') renderDebts();
-  if(id==='reminders') renderReminders();
-  if(id==='debtfree') renderMethods();
-}
-
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
-
-function renderTxRow(tx){
-  const sign=tx.type==='income'?'+':tx.type==='transfer'?'↔':'-';
-  const col=tx.type==='income'?'up':tx.type==='transfer'?'teal':'down';
-  return `<tr><td style="color:var(--muted)">${fmtDate(tx.date)}</td><td style="font-weight:500">${tx.desc}</td><td style="color:var(--muted)">${tx.cat}</td><td style="color:var(--muted)">${tx.account}</td><td><span class="badge badge-${tx.type}">${tx.type}</span></td><td style="text-align:right" class="${col}">${sign}${fmt(tx.amount)}</td><td style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="deleteTx(${tx.id})" style="padding:4px 8px;font-size:11px">✕</button></td></tr>`;
-}
-function renderTx(){
-  const search=(document.getElementById('txSearch')||{}).value||'';
-  const typeF=(document.getElementById('txFilter')||{}).value||'';
-  const catF=(document.getElementById('txCatFilter')||{}).value||'';
-  let list=state.transactions.filter(t=>(!search||t.desc.toLowerCase().includes(search.toLowerCase()))&&(!typeF||t.type===typeF)&&(!catF||t.cat===catF)).sort((a,b)=>b.date.localeCompare(a.date));
-  const body=document.getElementById('txBody'); const empty=document.getElementById('txEmpty');
-  if(!body) return;
-  body.innerHTML=list.map(renderTxRow).join('');
-  if(empty) empty.style.display=list.length?'none':'block';
-}
-function filterTx(){ renderTx(); }
-function renderRecentTx(){
-  const body=document.getElementById('recentTxBody'); if(!body) return;
-  const list=state.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-  body.innerHTML=list.map(t=>`<tr><td style="color:var(--muted)">${fmtDate(t.date)}</td><td style="font-weight:500">${t.desc}</td><td style="color:var(--muted)">${t.cat}</td><td style="color:var(--muted)">${t.account}</td><td style="text-align:right" class="${t.type==='income'?'up':t.type==='transfer'?'teal':'down'}">${t.type==='income'?'+':t.type==='transfer'?'↔':'-'}${fmt(t.amount)}</td></tr>`).join('');
-}
-function deleteTx(id){ state.transactions=state.transactions.filter(t=>t.id!==id); renderTx(); }
-function addEntry(){
-  const type=document.getElementById('entryType').value;
-  const amount=parseFloat(document.getElementById('entryAmount').value)||0;
-  const desc=document.getElementById('entryDesc').value||'Manual Entry';
-  const date=document.getElementById('entryDate').value||today();
-  const cat=document.getElementById('entryCat').value;
-  const account=document.getElementById('entryAccount').value;
-  const note=document.getElementById('entryNotes').value;
-  if(!amount) return alert('Please enter an amount.');
-  state.transactions.push({id:state.nextId++,date,desc,cat,account,type,amount,note});
-  closeModal('modalEntry');
-  renderTx(); renderRecentTx();
-  ['entryAmount','entryDesc','entryNotes'].forEach(id=>document.getElementById(id).value='');
-}
-function renderDebts(){
-  const el=document.getElementById('debtList'); if(!el) return;
-  el.innerHTML=state.debts.map(d=>{
-    const pct=Math.min(100,Math.round((d.balance/(d.balance*1.4))*100));
-    return `<div class="debt-card"><div class="debt-card-header"><div><div class="debt-name">${d.name}</div><div class="debt-meta">${d.type} · Due day ${d.dueDay} · ${d.rate}% APR</div></div><button class="btn btn-danger btn-sm" onclick="deleteDebt(${d.id})">Remove</button></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px"><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Balance</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--red)">${fmt(d.balance)}</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Min Payment</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold)">${fmt(d.minPayment)}</div></div><div style="background:var(--navy-3);border-radius:var(--radius-sm);padding:10px"><div style="font-size:10px;color:var(--muted)">Monthly Interest</div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted)">${fmt(d.balance*(d.rate/100/12))}</div></div></div><div style="display:flex;align-items:center;gap:10px"><div class="progress" style="flex:1"><div class="progress-bar pb-red" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--muted)">${pct}%</span></div></div>`;
-  }).join('');
-  if(!state.debts.length) el.innerHTML='<div class="empty-state"><div class="empty-icon">⊖</div><div class="empty-text">No debts added yet</div></div>';
-}
-function deleteDebt(id){ state.debts=state.debts.filter(d=>d.id!==id); renderDebts(); }
-function addDebt(){
-  const name=document.getElementById('debtName').value;
-  const type=document.getElementById('debtType').value;
-  const balance=parseFloat(document.getElementById('debtBalance').value)||0;
-  const rate=parseFloat(document.getElementById('debtRate').value)||0;
-  const minPayment=parseFloat(document.getElementById('debtMin').value)||0;
-  const dueDay=parseInt(document.getElementById('debtDue').value)||1;
-  if(!name||!balance) return alert('Please fill in name and balance.');
-  state.debts.push({id:state.nextId++,name,type,balance,rate,minPayment,dueDay});
-  closeModal('modalDebt'); renderDebts();
-  ['debtName','debtBalance','debtRate','debtMin','debtDue'].forEach(id=>document.getElementById(id).value='');
-}
-function renderReminders(){
-  const tabs=['upcoming','subscriptions','bills','loans'];
-  tabs.forEach(t=>{ const el=document.getElementById('reminder-'+t); if(el) el.innerHTML=''; });
-  const sorted=[...state.reminders].sort((a,b)=>new Date(a.date)-new Date(b.date));
-  const makeItem=r=>`<div class="reminder-item" style="background:${r.urgent?'rgba(248,113,113,0.1)':'var(--navy-3)'};border:${r.urgent?'1px solid rgba(248,113,113,0.2)':'1px solid transparent'}"><div class="reminder-icon" style="background:var(--navy-4)">${r.icon}</div><div class="reminder-body"><div class="reminder-title">${r.name} ${r.urgent?'<span style="color:var(--red);font-size:10px;font-weight:600">● DUE SOON</span>':''}</div><div class="reminder-date">${r.freq} · Due ${fmtDate(r.date)}</div></div><div class="reminder-amount">${fmt(r.amount)}</div><button class="btn btn-success btn-sm" onclick="markReminderPaid(${r.id})">Paid</button></div>`;
-  const upEl=document.getElementById('reminder-upcoming'); if(upEl) upEl.innerHTML=sorted.slice(0,6).map(makeItem).join('');
-  ['subscriptions','bills','loans'].forEach(cat=>{ const el=document.getElementById('reminder-'+cat); if(el){ const items=sorted.filter(r=>r.cat===cat); el.innerHTML=items.length?items.map(makeItem).join(''):'<div class="empty-state"><div class="empty-icon">◎</div><div class="empty-text">None in this category</div></div>'; } });
-}
-function markReminderPaid(id){ state.reminders=state.reminders.filter(r=>r.id!==id); renderReminders(); }
-function switchReminderTab(tab,el){ ['upcoming','subscriptions','bills','loans'].forEach(t=>{ document.getElementById('reminder-'+t).style.display=t===tab?'block':'none'; }); el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function addReminder(){
-  const name=document.getElementById('remName').value;
-  const cat=document.getElementById('remCat').value;
-  const amount=parseFloat(document.getElementById('remAmount').value)||0;
-  const date=document.getElementById('remDate').value||today();
-  const freq=document.getElementById('remFreq').value;
-  if(!name||!amount) return alert('Fill in name and amount.');
-  state.reminders.push({id:state.nextId++,name,cat,amount,date,freq,icon:'◎',urgent:false});
-  closeModal('modalReminder'); renderReminders();
-}
-function renderScan(){
-  const el=document.getElementById('scanList'); if(!el) return;
-  el.innerHTML=state.scanItems.map(s=>`<div class="notif-item ${s.status}"><div class="notif-dot" style="background:${s.status==='imported'?'var(--green)':'var(--gold)'}"></div><div style="flex:1"><div class="notif-text">${s.text}</div><div class="notif-result">→ ${s.detected} · ${fmt(s.amount)}</div></div><span class="badge ${s.status==='imported'?'badge-paid':'badge-pending'}">${s.status}</span>${s.status==='pending'?`<button class="btn btn-gold btn-sm" onclick="approveScan(${s.id})">Import</button>`:''}</div>`).join('');
-}
-function approveScan(id){ const item=state.scanItems.find(s=>s.id===id); if(item){ item.status='imported'; renderScan(); } }
-function approveAll(){ state.scanItems.forEach(s=>s.status='imported'); renderScan(); }
-function runScan(){ const btn=event.target; btn.textContent='Scanning...'; btn.disabled=true; setTimeout(()=>{ btn.textContent='⊙ Scan Now'; btn.disabled=false; },1500); }
-function renderMethods(){
-  const el=document.getElementById('methodList'); if(!el) return;
-  el.innerHTML=methods.map(m=>`<div class="method-card ${state.selectedMethod===m.id?'selected':''}" onclick="selectMethod('${m.id}')"><div class="method-title">${m.icon} ${m.name} <span class="method-tag">${m.tag}</span></div><div class="method-desc">${m.desc}</div><div style="display:flex;gap:16px;margin-top:10px;font-size:12px"><span style="color:var(--green)">✓ Debt-free in ~${m.freeMonths} months</span><span style="color:var(--gold)">✓ Save ~${fmt(m.interestSaved)} in interest</span></div></div>`).join('');
-  document.getElementById('debtfree-methods').style.display='block';
-  document.getElementById('debtfree-plan').style.display='none';
-}
-function selectMethod(id){ state.selectedMethod=id; renderMethods(); }
-function confirmMethod(){
-  if(!state.selectedMethod) return alert('Please select a strategy first.');
-  const m=methods.find(x=>x.id===state.selectedMethod);
-  document.getElementById('debtfree-methods').style.display='none';
-  document.getElementById('debtfree-plan').style.display='block';
-  document.getElementById('planMethodName').textContent=m.name;
-  document.getElementById('planSummaryText').textContent='Using '+m.name+' with $2,340/mo available';
-  document.getElementById('planFreeDate').textContent=addMonths(m.freeMonths);
-  document.getElementById('planInterestSaved').textContent=fmt(m.interestSaved);
-  document.getElementById('planExtra').textContent='$2,340/mo';
-  generatePlan(m); setTimeout(renderPayoffChart,100);
-}
-function generatePlan(m){
-  const debts=[...state.debts]; let ordered;
-  if(m.id==='avalanche') ordered=[...debts].sort((a,b)=>b.rate-a.rate);
-  else if(m.id==='snowball') ordered=[...debts].sort((a,b)=>a.balance-b.balance);
-  else if(m.id==='hybrid'){ const snap=[...debts].sort((a,b)=>a.balance-b.balance); ordered=[snap[0],...[...debts].sort((a,b)=>b.rate-a.rate).filter(d=>d.id!==snap[0].id)]; }
-  else ordered=[...debts].sort((a,b)=>b.rate-a.rate);
-  state.planPayments=[];
-  ordered.forEach((d,i)=>{ const extra=i===0?2340-debts.reduce((s,x)=>s+x.minPayment,0)+d.minPayment:d.minPayment; const payment=i===0?Math.min(d.balance,extra):d.minPayment; const dueDate=new Date(); dueDate.setDate(d.dueDay); dueDate.setMonth(dueDate.getMonth()+i); state.planPayments.push({id:state.nextId++,debtName:d.name,amount:payment,date:dueDate.toISOString().split('T')[0],done:false,month:1+i}); });
-  renderPlan();
-}
-function renderPlan(){
-  const el=document.getElementById('planPayments'); if(!el) return;
-  el.innerHTML=state.planPayments.map(p=>`<div class="plan-row" style="opacity:${p.done?0.5:1}"><div class="plan-check ${p.done?'done':''}" onclick="togglePlan(${p.id})">${p.done?'✓':''}</div><div class="plan-info"><div class="plan-debt">${p.debtName}</div><div class="plan-date">Due: ${fmtDate(p.date)} · Month ${p.month}</div></div><div class="plan-amount" style="${p.done?'color:var(--muted);text-decoration:line-through':''}">${fmt(p.amount)}</div></div>`).join('');
-}
-function togglePlan(id){ const p=state.planPayments.find(x=>x.id===id); if(p) p.done=!p.done; renderPlan(); }
-function showMethods(){ document.getElementById('debtfree-methods').style.display='block'; document.getElementById('debtfree-plan').style.display='none'; }
-function switchReportTab(tab,el){ ['overview','income','expenses','trends'].forEach(t=>{ document.getElementById('report-'+t).style.display=t===tab?'block':'none'; }); el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); setTimeout(()=>{ initIncomeChart(); initExpensesChart(); initTrendsChart(); },100); }
-function renderExpCatList(){
-  const el=document.getElementById('expCatList'); if(!el) return;
-  const cats={Food:157.25,Transport:18.40,Utilities:173,Entertainment:25.98,Health:32.10,Shopping:87.99};
-  const total=Object.values(cats).reduce((a,b)=>a+b,0);
-  const colors={Food:'#c9a84c',Transport:'#2dd4bf',Utilities:'#60a5fa',Entertainment:'#a78bfa',Health:'#34d399',Shopping:'#f87171'};
-  el.innerHTML=Object.entries(cats).map(([cat,amt])=>{ const pct=Math.round(amt/total*100); return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>${cat}</span><span style="color:var(--muted)">${fmt(amt)} (${pct}%)</span></div><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${colors[cat]||'var(--gold)'}"></div></div></div>`; }).join('');
-}
-let charts={};
-function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
-function initCashflowChart(){ const ctx=document.getElementById('cashflowChart'); if(!ctx) return; destroyChart('cashflow'); charts.cashflow=new Chart(ctx,{type:'bar',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Income',data:[5200,5200,6050,5800,5800,6650],backgroundColor:'rgba(52,211,153,0.7)',borderRadius:4},{label:'Expenses',data:[3100,3400,4200,3200,3600,3460],backgroundColor:'rgba(248,113,113,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
-function initCategoryChart(){ const ctx=document.getElementById('categoryChart'); if(!ctx) return; destroyChart('category'); const cats=['Food','Transport','Utilities','Entertainment','Health','Shopping']; const data=[157.25,18.40,173,25.98,32.10,87.99]; const colors=['#c9a84c','#2dd4bf','#60a5fa','#a78bfa','#34d399','#f87171']; charts.category=new Chart(ctx,{type:'doughnut',data:{labels:cats,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#111e35'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false}}}}); const total=data.reduce((a,b)=>a+b,0); const legend=document.getElementById('categoryLegend'); if(legend) legend.innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><span style="color:var(--muted)">${c}</span><span style="margin-left:auto;color:var(--text);font-size:11px">${Math.round(data[i]/total*100)}%</span></div>`).join(''); }
-function initIvsEChart(){ const ctx=document.getElementById('ivseChart'); if(!ctx) return; destroyChart('ivse'); charts.ivse=new Chart(ctx,{type:'bar',data:{labels:['Income','Expenses','Saved'],datasets:[{data:[5800,3460,2340],backgroundColor:['rgba(52,211,153,0.7)','rgba(248,113,113,0.7)','rgba(201,168,76,0.7)'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
-function renderPayoffChart(){ const ctx=document.getElementById('payoffChart'); if(!ctx) return; destroyChart('payoff'); charts.payoff=new Chart(ctx,{type:'line',data:{labels:['Now','3mo','6mo','9mo','12mo','15mo','18mo'],datasets:[{label:'Chase Visa',data:[5200,3900,2500,1000,0,0,0],borderColor:'#f87171',tension:0.4,fill:false,pointRadius:3},{label:'SoFi Loan',data:[8450,7200,5800,4200,2500,700,0],borderColor:'#c9a84c',tension:0.4,fill:false,pointRadius:3},{label:'Student Loan',data:[5000,4500,3900,3200,2400,1400,200],borderColor:'#2dd4bf',tension:0.4,fill:false,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#64748b',font:{size:11}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
-function initIncomeChart(){ const ctx=document.getElementById('incomeChart'); if(!ctx) return; destroyChart('income'); charts.income=new Chart(ctx,{type:'bar',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Salary',data:[5200,5200,5200,5800,5800,5800],backgroundColor:'rgba(52,211,153,0.7)',borderRadius:4},{label:'Freelance',data:[0,0,850,0,0,850],backgroundColor:'rgba(201,168,76,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
-function initExpensesChart(){ const ctx=document.getElementById('expensesChart'); if(!ctx) return; destroyChart('expenses'); charts.expenses=new Chart(ctx,{type:'bar',indexAxis:'y',data:{labels:['Food','Utilities','Shopping','Health','Entertainment','Transport'],datasets:[{data:[157.25,173,87.99,32.10,25.98,18.40],backgroundColor:'rgba(201,168,76,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v}},y:{grid:{display:false},ticks:{color:'#94a3b8'}}}}}); }
-function initTrendsChart(){ const ctx=document.getElementById('trendsChart'); if(!ctx) return; destroyChart('trends'); charts.trends=new Chart(ctx,{type:'line',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar'],datasets:[{label:'Total Expenses',data:[3100,3400,4200,3200,3600,3460],borderColor:'#f87171',tension:0.4,fill:true,backgroundColor:'rgba(248,113,113,0.08)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#64748b',callback:v=>'$'+v.toLocaleString()}}}}}); }
-
-document.getElementById('exportBtn')&&document.getElementById('exportBtn').addEventListener('click',()=>{ const rows=[['Date','Description','Category','Account','Type','Amount'],...state.transactions.map(t=>[t.date,t.desc,t.cat,t.account,t.type,t.amount])]; const csv=rows.map(r=>r.join(',')).join('\n'); const a=document.createElement('a'); a.href='data:text/csv,'+encodeURIComponent(csv); a.download='transactions.csv'; a.click(); });
-
-// ── BOOT ──
-window.addEventListener('DOMContentLoaded',()=>{
-  // Check if returning user with existing session
-  const hasSession=false; // In production: check localStorage token
-  if(hasSession){ DB.currentUser=DB.users[0]; showPinLock(); }
-  else { showAuth(); }
-});
-</script>
-</body>
-</html>
+      <div class="plan-summary"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--gold)" id="planMethodName"></div><div style="font-size:12px;color:var(--muted);margin-top:4px" id="planSummaryText"></div></div><button class="btn btn-ghost btn
